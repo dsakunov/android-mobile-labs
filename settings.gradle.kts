@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "MobileLabs"
 include(":app")
+include(":tasker")
