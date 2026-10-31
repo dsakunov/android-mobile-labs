@@ -1,5 +1,6 @@
 package com.example.tasker.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -133,6 +134,7 @@ fun TaskSheet(
                 onClick = { showPicker = true },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape = RoundedCornerShape(14.dp),
+                border = BorderStroke(1.dp, Border),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Ink)
             ) {
                 Text(date.fieldText(), modifier = Modifier.weight(1f))
@@ -187,6 +189,7 @@ fun TaskSheet(
                 }
                 Spacer(Modifier.width(8.dp))
                 Button(
+                    shape = RoundedCornerShape(12.dp),
                     onClick = {
                         onSave(
                             Task(

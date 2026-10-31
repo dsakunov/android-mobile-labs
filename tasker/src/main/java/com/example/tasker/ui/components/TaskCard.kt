@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -58,11 +57,7 @@ fun TaskCard(
         ),
         border = BorderStroke(1.dp, Border)
     ) {
-        Column(
-            Modifier
-                .defaultMinSize(minHeight = 92.dp)
-                .padding(horizontal = 16.dp, vertical = 14.dp)
-        ) {
+        Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                     Checkbox(
@@ -84,16 +79,9 @@ fun TaskCard(
                 )
                 Icon(Icons.Outlined.ChevronRight, null, tint = Muted)
             }
+            val hasNote = task.note.isNotBlank()
             Column(Modifier.padding(start = 36.dp, top = 2.dp)) {
-                if (task.note.isNotBlank()) {
-                    Text(
-                        task.note,
-                        color = Muted,
-                        fontSize = 13.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+                if (hasNote) NoteLine(task.note)
                 Text(
                     buildAnnotatedString {
                         withStyle(SpanStyle(color = Muted)) { append("${task.date.shortText()}  ·  ") }
@@ -104,9 +92,22 @@ fun TaskCard(
                     fontSize = 12.sp,
                     modifier = Modifier.padding(top = 2.dp)
                 )
+                if (!hasNote) NoteLine("")
             }
         }
     }
+}
+
+@Composable
+private fun NoteLine(text: String) {
+    Text(
+        text,
+        color = Muted,
+        fontSize = 13.sp,
+        minLines = 1,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
 }
 
 @Preview(showBackground = true)

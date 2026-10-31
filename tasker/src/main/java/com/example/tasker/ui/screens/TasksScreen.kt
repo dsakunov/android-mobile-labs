@@ -48,6 +48,7 @@ import com.example.tasker.ui.components.TaskSheet
 import com.example.tasker.ui.components.fieldColors
 import com.example.tasker.ui.components.sampleTasks
 import com.example.tasker.ui.theme.Bg
+import com.example.tasker.ui.theme.Border
 import com.example.tasker.ui.theme.Muted
 import com.example.tasker.ui.theme.Teal
 import com.example.tasker.ui.theme.TealDark
@@ -162,6 +163,12 @@ private fun TasksContent(
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = TealSoft,
                         selectedLabelColor = TealDark
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = filter == f,
+                        borderColor = Border,
+                        selectedBorderColor = Color.Transparent
                     )
                 )
             }

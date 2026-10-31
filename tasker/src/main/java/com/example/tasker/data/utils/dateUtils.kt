@@ -23,7 +23,7 @@ fun LocalDate.weekdayShort(): String =
     formatPattern("EEE").replace(".", "").uppercase(currentLocale())
 
 fun LocalDate.fullDayText(): String =
-    formatPattern("EEEE, d MMMM").split(" ").joinToString(" ") { it.capitalizeFirst() }
+    formatPattern("EEEE, d MMMM").capitalizeFirst()
 
 fun LocalDate.monthYearCaps(): String {
     val text = formatPattern("LLLL yyyy").uppercase(currentLocale())
