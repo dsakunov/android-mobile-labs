@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Checklist
@@ -12,6 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.tasker.MainActivity
 import com.example.tasker.PlanActivity
 import com.example.tasker.R
@@ -40,21 +43,26 @@ private val navItems = listOf(
 fun BottomNavBar(selected: Int, modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
-    NavigationBar(modifier = modifier, containerColor = Color.White) {
-        navItems.forEachIndexed { index, item ->
-            NavigationBarItem(
-                selected = index == selected,
-                onClick = { if (index != selected) openScreen(context, index) },
-                icon = { Icon(item.icon, null) },
-                label = { Text(stringResource(item.labelRes)) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = TealDark,
-                    selectedTextColor = TealDark,
-                    indicatorColor = TealSoft,
-                    unselectedIconColor = Muted,
-                    unselectedTextColor = Muted
+    Surface(modifier = modifier, color = Color.White) {
+        NavigationBar(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            containerColor = Color.Transparent
+        ) {
+            navItems.forEachIndexed { index, item ->
+                NavigationBarItem(
+                    selected = index == selected,
+                    onClick = { if (index != selected) openScreen(context, index) },
+                    icon = { Icon(item.icon, null) },
+                    label = { Text(stringResource(item.labelRes)) },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = TealDark,
+                        selectedTextColor = TealDark,
+                        indicatorColor = TealSoft,
+                        unselectedIconColor = Muted,
+                        unselectedTextColor = Muted
+                    )
                 )
-            )
+            }
         }
     }
 }

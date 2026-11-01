@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarToday
@@ -26,6 +25,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -112,7 +112,6 @@ fun TaskSheet(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(stringResource(R.string.hint_title)) },
                 singleLine = true,
-                shape = RoundedCornerShape(14.dp),
                 colors = fieldColors()
             )
 
@@ -124,7 +123,6 @@ fun TaskSheet(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(stringResource(R.string.hint_note)) },
                 minLines = 2,
-                shape = RoundedCornerShape(14.dp),
                 colors = fieldColors()
             )
 
@@ -133,7 +131,7 @@ fun TaskSheet(
             OutlinedButton(
                 onClick = { showPicker = true },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape = RoundedCornerShape(14.dp),
+                shape = MaterialTheme.shapes.medium,
                 border = BorderStroke(1.dp, Border),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Ink)
             ) {
@@ -156,7 +154,6 @@ fun TaskSheet(
                             )
                         },
                         modifier = Modifier.weight(1f).height(48.dp),
-                        shape = RoundedCornerShape(12.dp),
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = p.selectedBg(),
                             selectedLabelColor = p.selectedText()
@@ -189,7 +186,7 @@ fun TaskSheet(
                 }
                 Spacer(Modifier.width(8.dp))
                 Button(
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.medium,
                     onClick = {
                         onSave(
                             Task(

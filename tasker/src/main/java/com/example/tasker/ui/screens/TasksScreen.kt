@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Search
@@ -33,6 +32,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -136,30 +139,40 @@ private fun TasksContent(
             today = today
         )
 
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(20.dp))
 
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
-            modifier = Modifier.padding(horizontal = 22.dp).fillMaxWidth(),
+            modifier = Modifier.padding(horizontal = 22.dp).fillMaxWidth().height(52.dp),
             placeholder = { Text(stringResource(R.string.search_hint)) },
             leadingIcon = { Icon(Icons.Outlined.Search, null) },
             singleLine = true,
-            shape = RoundedCornerShape(18.dp),
             colors = fieldColors(containerColor = Color.White)
         )
 
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(12.dp))
 
         Row(
             Modifier.padding(horizontal = 22.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Filter.entries.forEach { f ->
+                val name = stringResource(f.labelRes)
+                val count = tasks.count { matches(it, f) }
                 FilterChip(
                     selected = filter == f,
                     onClick = { filter = f },
-                    label = { Text("${stringResource(f.labelRes)}  ${tasks.count { matches(it, f) }}") },
+                    label = {
+                        Text(
+                            buildAnnotatedString {
+                                withStyle(SpanStyle(fontWeight = if (filter == f) FontWeight.Bold else FontWeight.Normal)) {
+                                    append(name)
+                                }
+                                withStyle(SpanStyle(fontWeight = FontWeight.Normal)) { append("  $count") }
+                            }
+                        )
+                    },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = TealSoft,
                         selectedLabelColor = TealDark
@@ -174,7 +187,7 @@ private fun TasksContent(
             }
         }
 
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(12.dp))
 
         if (visible.isNotEmpty()) {
             LazyColumn(
