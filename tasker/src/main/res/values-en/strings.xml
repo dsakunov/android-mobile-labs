@@ -1,0 +1,56 @@
+<resources>
+    <string name="nav_tasks">Tasks</string>
+    <string name="nav_plan">Plan</string>
+    <string name="nav_settings">Settings</string>
+
+    <string name="panel_label">PLANNING PANEL</string>
+    <string name="my_tasks">My tasks</string>
+    <string name="search_hint">Search tasks</string>
+    <string name="filter_all">All</string>
+    <string name="filter_today">Today</string>
+    <string name="filter_done">Done</string>
+    <string name="no_tasks">No tasks</string>
+    <string name="add_task">Add task</string>
+
+    <string name="priority_low">Low</string>
+    <string name="priority_medium">Medium</string>
+    <string name="priority_high">High</string>
+
+    <string name="new_task">New task</string>
+    <string name="edit_task">Edit task</string>
+    <string name="close">Close</string>
+    <string name="field_title">Title</string>
+    <string name="field_note">Note</string>
+    <string name="field_date">Date</string>
+    <string name="field_priority">Priority</string>
+    <string name="hint_title">E.g. buy groceries</string>
+    <string name="hint_note">Additional information</string>
+    <string name="pick_date">Pick a date</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="ok">OK</string>
+
+    <string name="planner_title">Planner</string>
+    <string name="scheduled">Scheduled</string>
+    <string name="tasks_count">Tasks: %1$d</string>
+    <string name="done_count">%1$d/%2$d completed</string>
+    <string name="no_tasks_day">No tasks for this day</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="section_general">GENERAL</string>
+    <string name="section_data">DATA</string>
+    <string name="section_about">ABOUT</string>
+    <string name="language">Language</string>
+    <string name="language_sub">Interface language</string>
+    <string name="language_current">English</string>
+    <string name="dark_theme">Dark theme</string>
+    <string name="dark_theme_sub">Use dark appearance</string>
+    <string name="hide_done">Hide completed</string>
+    <string name="hide_done_sub">Automatically hide completed tasks</string>
+    <string name="show_priorities">Show priorities</string>
+    <string name="show_priorities_sub">Show priority statuses</string>
+    <string name="remove_done">Remove completed</string>
+    <string name="remove_done_sub">Clear all finished tasks · %1$d</string>
+    <string name="version">Version 1.0</string>
+</resources>
