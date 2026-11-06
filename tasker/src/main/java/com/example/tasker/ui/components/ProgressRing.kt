@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.tasker.ui.theme.RingMint
+import com.example.tasker.ui.theme.TaskerTheme
 
 @Composable
 fun ProgressRing(percent: Int, modifier: Modifier = Modifier) {
@@ -25,7 +25,7 @@ fun ProgressRing(percent: Int, modifier: Modifier = Modifier) {
         CircularProgressIndicator(
             progress = { progress },
             modifier = Modifier.fillMaxSize(),
-            color = RingMint,
+            color = TaskerTheme.colors.ringMint,
             strokeWidth = 7.dp,
             trackColor = Color.White.copy(alpha = 0.2f),
             strokeCap = StrokeCap.Round,

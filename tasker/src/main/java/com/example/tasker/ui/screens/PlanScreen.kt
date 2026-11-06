@@ -43,10 +43,7 @@ import com.example.tasker.ui.components.ScreenHeader
 import com.example.tasker.ui.components.TaskCard
 import com.example.tasker.ui.components.TaskSheet
 import com.example.tasker.ui.components.sampleTasks
-import com.example.tasker.ui.theme.Bg
-import com.example.tasker.ui.theme.CardGreen
-import com.example.tasker.ui.theme.Ink
-import com.example.tasker.ui.theme.Muted
+import com.example.tasker.ui.theme.TaskerTheme
 import java.time.LocalDate
 
 @Composable
@@ -56,7 +53,7 @@ fun PlanScreen(modifier: Modifier = Modifier) {
 
     Scaffold(
         modifier = modifier,
-        containerColor = Bg,
+        containerColor = TaskerTheme.colors.bg,
         bottomBar = { BottomNavBar(selected = 1) }
     ) { innerPadding ->
         PlanContent(
@@ -86,6 +83,7 @@ private fun PlanContent(
     onEdit: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = TaskerTheme.colors
     val today = rememberToday()
     val week = remember(today) { (0L..6L).map { today.plusDays(it) } }
     var selectedEpoch by rememberSaveable { mutableStateOf(today.toEpochDay()) }
@@ -121,7 +119,7 @@ private fun PlanContent(
 
         Card(
             Modifier.padding(horizontal = 22.dp).fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = CardGreen)
+            colors = CardDefaults.cardColors(containerColor = colors.cardGreen)
         ) {
             Row(
                 Modifier.padding(horizontal = 22.dp, vertical = 24.dp),
@@ -145,8 +143,13 @@ private fun PlanContent(
             Modifier.fillMaxWidth().padding(horizontal = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(stringResource(R.string.scheduled), color = Ink, fontSize = 18.sp, modifier = Modifier.weight(1f))
-            Text(stringResource(R.string.done_count, doneCount, dayTasks.size), color = Muted, fontSize = 12.sp)
+            Text(
+                stringResource(R.string.scheduled),
+                color = colors.ink,
+                fontSize = 18.sp,
+                modifier = Modifier.weight(1f)
+            )
+            Text(stringResource(R.string.done_count, doneCount, dayTasks.size), color = colors.muted, fontSize = 12.sp)
         }
 
         Spacer(Modifier.height(14.dp))
@@ -162,7 +165,7 @@ private fun PlanContent(
             }
         } else if (loaded) {
             Box(Modifier.fillMaxSize().padding(top = 30.dp), contentAlignment = Alignment.TopCenter) {
-                Text(stringResource(R.string.no_tasks_day), color = Muted, fontSize = 15.sp)
+                Text(stringResource(R.string.no_tasks_day), color = colors.muted, fontSize = 15.sp)
             }
         }
     }

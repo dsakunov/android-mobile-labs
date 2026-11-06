@@ -3,24 +3,19 @@ package com.example.tasker.ui.components
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.example.tasker.ui.theme.Bg
-import com.example.tasker.ui.theme.Border
-import com.example.tasker.ui.theme.Ink
-import com.example.tasker.ui.theme.Muted
-import com.example.tasker.ui.theme.Placeholder
-import com.example.tasker.ui.theme.Teal
+import com.example.tasker.ui.theme.TaskerTheme
 
 @Composable
-fun fieldColors(containerColor: Color = Bg) = OutlinedTextFieldDefaults.colors(
+fun fieldColors(containerColor: Color = TaskerTheme.colors.bg) = OutlinedTextFieldDefaults.colors(
     focusedContainerColor = containerColor,
     unfocusedContainerColor = containerColor,
-    focusedBorderColor = Teal,
-    unfocusedBorderColor = Border,
-    focusedTextColor = Ink,
-    unfocusedTextColor = Ink,
-    cursorColor = Ink,
-    focusedPlaceholderColor = Placeholder,
-    unfocusedPlaceholderColor = Placeholder,
-    focusedLeadingIconColor = Muted,
-    unfocusedLeadingIconColor = Muted
+    focusedBorderColor = TaskerTheme.colors.teal,
+    unfocusedBorderColor = TaskerTheme.colors.border,
+    focusedTextColor = TaskerTheme.colors.ink,
+    unfocusedTextColor = TaskerTheme.colors.ink,
+    cursorColor = TaskerTheme.colors.ink,
+    focusedPlaceholderColor = TaskerTheme.colors.placeholder,
+    unfocusedPlaceholderColor = TaskerTheme.colors.placeholder,
+    focusedLeadingIconColor = TaskerTheme.colors.muted,
+    unfocusedLeadingIconColor = TaskerTheme.colors.muted
 )

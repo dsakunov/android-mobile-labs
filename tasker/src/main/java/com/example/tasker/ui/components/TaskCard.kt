@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -35,11 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tasker.data.utils.shortText
 import com.example.tasker.domain.Task
-import com.example.tasker.ui.theme.Border
-import com.example.tasker.ui.theme.CheckOff
-import com.example.tasker.ui.theme.CheckOn
-import com.example.tasker.ui.theme.Ink
-import com.example.tasker.ui.theme.Muted
+import com.example.tasker.ui.theme.TaskerTheme
 import com.example.tasker.ui.theme.textColor
 
 @Composable
@@ -49,13 +44,14 @@ fun TaskCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = TaskerTheme.colors
     OutlinedCard(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.outlinedCardColors(
-            containerColor = if (task.done) Color(0xFFFAFCFB) else Color.White
+            containerColor = if (task.done) colors.surfaceDone else colors.surface
         ),
-        border = BorderStroke(1.dp, Border)
+        border = BorderStroke(1.dp, colors.border)
     ) {
         Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -63,28 +59,31 @@ fun TaskCard(
                     Checkbox(
                         checked = task.done,
                         onCheckedChange = { onToggle() },
-                        colors = CheckboxDefaults.colors(checkedColor = CheckOn, uncheckedColor = CheckOff)
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = colors.checkOn,
+                            uncheckedColor = colors.checkOff
+                        )
                     )
                 }
                 Spacer(Modifier.width(12.dp))
                 Text(
                     task.title,
                     modifier = Modifier.weight(1f),
-                    color = if (task.done) Muted else Ink,
+                    color = if (task.done) colors.muted else colors.ink,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     textDecoration = if (task.done) TextDecoration.LineThrough else null,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Icon(Icons.Outlined.ChevronRight, null, tint = Muted)
+                Icon(Icons.Outlined.ChevronRight, null, tint = colors.muted)
             }
             val hasNote = task.note.isNotBlank()
             Column(Modifier.padding(start = 36.dp, top = 2.dp)) {
                 if (hasNote) NoteLine(task.note)
                 Text(
                     buildAnnotatedString {
-                        withStyle(SpanStyle(color = Muted)) { append("${task.date.shortText()}  ·  ") }
+                        withStyle(SpanStyle(color = colors.muted)) { append("${task.date.shortText()}  ·  ") }
                         withStyle(SpanStyle(color = task.priority.textColor(), fontWeight = FontWeight.Bold)) {
                             append(stringResource(task.priority.labelRes))
                         }
@@ -102,7 +101,7 @@ fun TaskCard(
 private fun NoteLine(text: String) {
     Text(
         text,
-        color = Muted,
+        color = TaskerTheme.colors.muted,
         fontSize = 13.sp,
         minLines = 1,
         maxLines = 1,

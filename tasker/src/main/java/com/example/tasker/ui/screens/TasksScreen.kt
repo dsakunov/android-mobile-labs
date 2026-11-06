@@ -50,12 +50,7 @@ import com.example.tasker.ui.components.TaskCard
 import com.example.tasker.ui.components.TaskSheet
 import com.example.tasker.ui.components.fieldColors
 import com.example.tasker.ui.components.sampleTasks
-import com.example.tasker.ui.theme.Bg
-import com.example.tasker.ui.theme.Border
-import com.example.tasker.ui.theme.Muted
-import com.example.tasker.ui.theme.Teal
-import com.example.tasker.ui.theme.TealDark
-import com.example.tasker.ui.theme.TealSoft
+import com.example.tasker.ui.theme.TaskerTheme
 
 private enum class Filter(@StringRes val labelRes: Int) {
     ALL(R.string.filter_all), TODAY(R.string.filter_today), DONE(R.string.filter_done)
@@ -63,6 +58,7 @@ private enum class Filter(@StringRes val labelRes: Int) {
 
 @Composable
 fun TasksScreen(modifier: Modifier = Modifier) {
+    val colors = TaskerTheme.colors
     var editingId by rememberSaveable { mutableStateOf<Long?>(null) }
     var creating by rememberSaveable { mutableStateOf(false) }
 
@@ -71,12 +67,12 @@ fun TasksScreen(modifier: Modifier = Modifier) {
 
     Scaffold(
         modifier = modifier,
-        containerColor = Bg,
+        containerColor = colors.bg,
         bottomBar = { BottomNavBar(selected = 0) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { creating = true },
-                containerColor = Teal,
+                containerColor = colors.teal,
                 contentColor = Color.White
             ) {
                 Icon(Icons.Filled.Add, stringResource(R.string.add_task))
@@ -116,6 +112,7 @@ private fun TasksContent(
     onEdit: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = TaskerTheme.colors
     val today = rememberToday()
     var filter by rememberSaveable { mutableStateOf(Filter.ALL) }
     var query by rememberSaveable { mutableStateOf("") }
@@ -148,7 +145,7 @@ private fun TasksContent(
             placeholder = { Text(stringResource(R.string.search_hint)) },
             leadingIcon = { Icon(Icons.Outlined.Search, null) },
             singleLine = true,
-            colors = fieldColors(containerColor = Color.White)
+            colors = fieldColors(containerColor = colors.surface)
         )
 
         Spacer(Modifier.height(12.dp))
@@ -174,13 +171,13 @@ private fun TasksContent(
                         )
                     },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = TealSoft,
-                        selectedLabelColor = TealDark
+                        selectedContainerColor = colors.tealSoft,
+                        selectedLabelColor = colors.tealDark
                     ),
                     border = FilterChipDefaults.filterChipBorder(
                         enabled = true,
                         selected = filter == f,
-                        borderColor = Border,
+                        borderColor = colors.border,
                         selectedBorderColor = Color.Transparent
                     )
                 )
@@ -200,7 +197,7 @@ private fun TasksContent(
             }
         } else if (loaded) {
             Box(Modifier.fillMaxSize().padding(top = 40.dp), contentAlignment = Alignment.TopCenter) {
-                Text(stringResource(R.string.no_tasks), color = Muted, fontSize = 15.sp)
+                Text(stringResource(R.string.no_tasks), color = colors.muted, fontSize = 15.sp)
             }
         }
     }
