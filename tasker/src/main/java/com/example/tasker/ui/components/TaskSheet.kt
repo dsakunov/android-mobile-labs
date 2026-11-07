@@ -50,12 +50,7 @@ import com.example.tasker.R
 import com.example.tasker.data.utils.fieldText
 import com.example.tasker.domain.Priority
 import com.example.tasker.domain.Task
-import com.example.tasker.ui.theme.Border
-import com.example.tasker.ui.theme.Ink
-import com.example.tasker.ui.theme.Muted
-import com.example.tasker.ui.theme.RedText
-import com.example.tasker.ui.theme.Teal
-import com.example.tasker.ui.theme.TealDisabled
+import com.example.tasker.ui.theme.TaskerTheme
 import com.example.tasker.ui.theme.selectedBg
 import com.example.tasker.ui.theme.selectedText
 import java.time.Instant
@@ -70,6 +65,7 @@ fun TaskSheet(
     onSave: (Task) -> Unit,
     onDelete: () -> Unit
 ) {
+    val colors = TaskerTheme.colors
     var title by remember { mutableStateOf(initial?.title ?: "") }
     var note by remember { mutableStateOf(initial?.note ?: "") }
     var date by remember { mutableStateOf(initial?.date ?: LocalDate.now()) }
@@ -80,7 +76,7 @@ fun TaskSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = Color.White
+        containerColor = colors.surface
     ) {
         Column(
             Modifier
@@ -96,12 +92,12 @@ fun TaskSheet(
             ) {
                 Text(
                     stringResource(if (initial == null) R.string.new_task else R.string.edit_task),
-                    color = Ink,
+                    color = colors.ink,
                     fontSize = 22.sp,
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Outlined.Close, stringResource(R.string.close), tint = Muted)
+                    Icon(Icons.Outlined.Close, stringResource(R.string.close), tint = colors.muted)
                 }
             }
 
@@ -132,8 +128,8 @@ fun TaskSheet(
                 onClick = { showPicker = true },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape = MaterialTheme.shapes.medium,
-                border = BorderStroke(1.dp, Border),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Ink)
+                border = BorderStroke(1.dp, colors.border),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.ink)
             ) {
                 Text(date.fieldText(), modifier = Modifier.weight(1f))
                 Icon(Icons.Outlined.CalendarToday, stringResource(R.string.pick_date))
@@ -161,7 +157,7 @@ fun TaskSheet(
                         border = FilterChipDefaults.filterChipBorder(
                             enabled = true,
                             selected = p == priority,
-                            borderColor = Border,
+                            borderColor = colors.border,
                             selectedBorderColor = Color.Transparent
                         )
                     )
@@ -173,7 +169,7 @@ fun TaskSheet(
                 if (initial != null) {
                     TextButton(
                         onClick = onDelete,
-                        colors = ButtonDefaults.textButtonColors(contentColor = RedText)
+                        colors = ButtonDefaults.textButtonColors(contentColor = colors.redText)
                     ) {
                         Icon(Icons.Outlined.DeleteOutline, null)
                         Spacer(Modifier.width(8.dp))
@@ -182,7 +178,7 @@ fun TaskSheet(
                 }
                 Spacer(Modifier.weight(1f))
                 TextButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.cancel), color = Muted)
+                    Text(stringResource(R.string.cancel), color = colors.muted)
                 }
                 Spacer(Modifier.width(8.dp))
                 Button(
@@ -201,8 +197,8 @@ fun TaskSheet(
                     },
                     enabled = canSave,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Teal,
-                        disabledContainerColor = TealDisabled,
+                        containerColor = colors.teal,
+                        disabledContainerColor = colors.tealDisabled,
                         disabledContentColor = Color.White
                     )
                 ) {
@@ -234,7 +230,7 @@ fun TaskSheet(
 @Composable
 private fun FieldLabel(text: String) {
     Text(
-        text, color = Muted, fontSize = 13.sp, fontWeight = FontWeight.Bold,
+        text, color = TaskerTheme.colors.muted, fontSize = 13.sp, fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(bottom = 8.dp)
     )
 }

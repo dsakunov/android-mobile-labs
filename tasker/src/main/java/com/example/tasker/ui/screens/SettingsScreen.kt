@@ -22,9 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,18 +39,16 @@ import com.example.tasker.ui.components.ScreenHeader
 import com.example.tasker.ui.components.SectionLabel
 import com.example.tasker.ui.components.SettingRow
 import com.example.tasker.ui.components.SettingsCard
-import com.example.tasker.ui.theme.Bg
-import com.example.tasker.ui.theme.Border
-import com.example.tasker.ui.theme.Muted
+import com.example.tasker.ui.theme.TaskerTheme
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier) {
-    val settings by remember { SettingsRepository.flow() }.collectAsState(initial = AppSettings())
+    val settings = SettingsRepository.settings
     val doneCount = TaskRepository.tasks.count { it.done }
 
     Scaffold(
         modifier = modifier,
-        containerColor = Bg,
+        containerColor = TaskerTheme.colors.bg,
         bottomBar = { BottomNavBar(selected = 2) }
     ) { innerPadding ->
         SettingsContent(
@@ -76,6 +71,7 @@ private fun SettingsContent(
     onShowPrioritiesChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = TaskerTheme.colors
     val today = rememberToday()
 
     Column(
@@ -99,25 +95,25 @@ private fun SettingsContent(
                 subtitle = stringResource(R.string.language_sub),
                 onClick = { }
             ) {
-                Text(stringResource(R.string.language_current), color = Muted, fontSize = 13.sp)
+                Text(stringResource(R.string.language_current), color = colors.muted, fontSize = 13.sp)
                 Spacer(Modifier.width(4.dp))
-                Icon(Icons.Outlined.ChevronRight, null, tint = Muted, modifier = Modifier.size(20.dp))
+                Icon(Icons.Outlined.ChevronRight, null, tint = colors.muted, modifier = Modifier.size(20.dp))
             }
-            HorizontalDivider(color = Border)
+            HorizontalDivider(color = colors.border)
             SettingRow(
                 icon = Icons.Outlined.DarkMode,
                 title = stringResource(R.string.dark_theme),
                 subtitle = stringResource(R.string.dark_theme_sub),
                 onClick = { onDarkThemeChange(!settings.darkTheme) }
             ) { AppSwitch(settings.darkTheme) }
-            HorizontalDivider(color = Border)
+            HorizontalDivider(color = colors.border)
             SettingRow(
                 icon = Icons.Outlined.VisibilityOff,
                 title = stringResource(R.string.hide_done),
                 subtitle = stringResource(R.string.hide_done_sub),
                 onClick = { onHideCompletedChange(!settings.hideCompleted) }
             ) { AppSwitch(settings.hideCompleted) }
-            HorizontalDivider(color = Border)
+            HorizontalDivider(color = colors.border)
             SettingRow(
                 icon = Icons.Outlined.LocalOffer,
                 title = stringResource(R.string.show_priorities),
@@ -135,7 +131,7 @@ private fun SettingsContent(
                 subtitle = stringResource(R.string.remove_done_sub, doneCount),
                 onClick = { }
             ) {
-                Icon(Icons.Outlined.ChevronRight, null, tint = Muted, modifier = Modifier.size(20.dp))
+                Icon(Icons.Outlined.ChevronRight, null, tint = colors.muted, modifier = Modifier.size(20.dp))
             }
         }
 

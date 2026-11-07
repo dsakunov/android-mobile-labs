@@ -18,11 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tasker.data.utils.weekdayShort
-import com.example.tasker.ui.theme.Ink
-import com.example.tasker.ui.theme.Muted
-import com.example.tasker.ui.theme.Teal
-import com.example.tasker.ui.theme.TealDark
-import com.example.tasker.ui.theme.TealSoft
+import com.example.tasker.ui.theme.TaskerTheme
 import java.time.LocalDate
 
 @Composable
@@ -33,11 +29,12 @@ fun DayPill(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = TaskerTheme.colors
     Card(
         onClick = onClick,
         modifier = modifier.width(48.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (selected) TealSoft else Color.Transparent
+            containerColor = if (selected) colors.tealSoft else Color.Transparent
         )
     ) {
         Column(
@@ -48,17 +45,17 @@ fun DayPill(
                 day.weekdayShort(),
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (selected) TealDark else Muted
+                color = if (selected) colors.tealDark else colors.muted
             )
             Text(
                 day.dayOfMonth.toString(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = Ink
+                color = colors.ink
             )
             Badge(
                 modifier = Modifier.padding(top = 4.dp),
-                containerColor = if (hasTasks) Teal else Color.Transparent
+                containerColor = if (hasTasks) colors.teal else Color.Transparent
             )
         }
     }
