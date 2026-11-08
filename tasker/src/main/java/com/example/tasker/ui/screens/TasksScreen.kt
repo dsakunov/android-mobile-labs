@@ -1,6 +1,5 @@
 package com.example.tasker.ui.screens
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +42,9 @@ import com.example.tasker.R
 import com.example.tasker.data.repository.TaskRepository
 import com.example.tasker.data.utils.rememberToday
 import com.example.tasker.domain.Task
+import com.example.tasker.domain.TaskFilter
+import com.example.tasker.domain.matches
+import com.example.tasker.domain.matchesQuery
 import com.example.tasker.ui.components.BottomNavBar
 import com.example.tasker.ui.components.PreviewWrapper
 import com.example.tasker.ui.components.ScreenHeader
@@ -51,10 +53,6 @@ import com.example.tasker.ui.components.TaskSheet
 import com.example.tasker.ui.components.fieldColors
 import com.example.tasker.ui.components.sampleTasks
 import com.example.tasker.ui.theme.TaskerTheme
-
-private enum class Filter(@StringRes val labelRes: Int) {
-    ALL(R.string.filter_all), TODAY(R.string.filter_today), DONE(R.string.filter_done)
-}
 
 @Composable
 fun TasksScreen(modifier: Modifier = Modifier) {
@@ -114,20 +112,10 @@ private fun TasksContent(
 ) {
     val colors = TaskerTheme.colors
     val today = rememberToday()
-    var filter by rememberSaveable { mutableStateOf(Filter.ALL) }
+    var filter by rememberSaveable { mutableStateOf(TaskFilter.ALL) }
     var query by rememberSaveable { mutableStateOf("") }
 
-    fun matches(t: Task, f: Filter) = when (f) {
-        Filter.ALL -> true
-        Filter.TODAY -> t.date == today
-        Filter.DONE -> t.done
-    }
-
-    val visible = tasks.filter {
-        matches(it, filter) && (query.isBlank() ||
-                it.title.contains(query.trim(), ignoreCase = true) ||
-                it.note.contains(query.trim(), ignoreCase = true))
-    }
+    val visible = tasks.filter { it.matches(filter, today) && it.matchesQuery(query) }
 
     Column(modifier.fillMaxSize()) {
         ScreenHeader(
@@ -154,9 +142,9 @@ private fun TasksContent(
             Modifier.padding(horizontal = 22.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Filter.entries.forEach { f ->
+            TaskFilter.entries.forEach { f ->
                 val name = stringResource(f.labelRes)
-                val count = tasks.count { matches(it, f) }
+                val count = tasks.count { it.matches(f, today) }
                 FilterChip(
                     selected = filter == f,
                     onClick = { filter = f },
