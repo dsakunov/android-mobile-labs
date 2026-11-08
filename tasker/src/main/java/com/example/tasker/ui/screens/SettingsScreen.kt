@@ -22,6 +22,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +38,7 @@ import com.example.tasker.data.utils.rememberToday
 import com.example.tasker.domain.AppSettings
 import com.example.tasker.ui.components.AppSwitch
 import com.example.tasker.ui.components.BottomNavBar
+import com.example.tasker.ui.components.ConfirmDialog
 import com.example.tasker.ui.components.PreviewWrapper
 import com.example.tasker.ui.components.ScreenHeader
 import com.example.tasker.ui.components.SectionLabel
@@ -45,6 +50,7 @@ import com.example.tasker.ui.theme.TaskerTheme
 fun SettingsScreen(modifier: Modifier = Modifier) {
     val settings = SettingsRepository.settings
     val doneCount = TaskRepository.tasks.count { it.done }
+    var showRemoveDone by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -57,7 +63,21 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             onDarkThemeChange = SettingsRepository::setDarkTheme,
             onHideCompletedChange = SettingsRepository::setHideCompleted,
             onShowPrioritiesChange = SettingsRepository::setShowPriorities,
+            onRemoveDoneClick = { showRemoveDone = true },
             modifier = Modifier.padding(innerPadding)
+        )
+    }
+
+    if (showRemoveDone) {
+        ConfirmDialog(
+            title = stringResource(R.string.remove_done_title),
+            text = stringResource(R.string.remove_done_text, doneCount),
+            confirmText = stringResource(R.string.delete),
+            onConfirm = {
+                TaskRepository.deleteDone()
+                showRemoveDone = false
+            },
+            onDismiss = { showRemoveDone = false }
         )
     }
 }
@@ -69,6 +89,7 @@ private fun SettingsContent(
     onDarkThemeChange: (Boolean) -> Unit,
     onHideCompletedChange: (Boolean) -> Unit,
     onShowPrioritiesChange: (Boolean) -> Unit,
+    onRemoveDoneClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val colors = TaskerTheme.colors
@@ -129,7 +150,7 @@ private fun SettingsContent(
                 icon = Icons.Outlined.DeleteOutline,
                 title = stringResource(R.string.remove_done),
                 subtitle = stringResource(R.string.remove_done_sub, doneCount),
-                onClick = { }
+                onClick = if (doneCount > 0) onRemoveDoneClick else null
             ) {
                 Icon(Icons.Outlined.ChevronRight, null, tint = colors.muted, modifier = Modifier.size(20.dp))
             }
@@ -159,7 +180,8 @@ private fun SettingsContentPreview() {
             doneCount = 1,
             onDarkThemeChange = {},
             onHideCompletedChange = {},
-            onShowPrioritiesChange = {}
+            onShowPrioritiesChange = {},
+            onRemoveDoneClick = {}
         )
     }
 }

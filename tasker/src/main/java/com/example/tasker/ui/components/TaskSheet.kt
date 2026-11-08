@@ -71,6 +71,7 @@ fun TaskSheet(
     var date by remember { mutableStateOf(initial?.date ?: LocalDate.now()) }
     var priority by remember { mutableStateOf(initial?.priority ?: Priority.MEDIUM) }
     var showPicker by remember { mutableStateOf(false) }
+    var showDeleteConfirm by remember { mutableStateOf(false) }
     val canSave = title.isNotBlank()
 
     ModalBottomSheet(
@@ -168,7 +169,7 @@ fun TaskSheet(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (initial != null) {
                     TextButton(
-                        onClick = onDelete,
+                        onClick = { showDeleteConfirm = true },
                         colors = ButtonDefaults.textButtonColors(contentColor = colors.redText)
                     ) {
                         Icon(Icons.Outlined.DeleteOutline, null)
@@ -224,6 +225,19 @@ fun TaskSheet(
             },
             dismissButton = { TextButton(onClick = { showPicker = false }) { Text(stringResource(R.string.cancel)) } }
         ) { DatePicker(state = state) }
+    }
+
+    if (showDeleteConfirm) {
+        ConfirmDialog(
+            title = stringResource(R.string.delete_task_title),
+            text = stringResource(R.string.delete_task_text, initial?.title.orEmpty()),
+            confirmText = stringResource(R.string.delete),
+            onConfirm = {
+                showDeleteConfirm = false
+                onDelete()
+            },
+            onDismiss = { showDeleteConfirm = false }
+        )
     }
 }
 
