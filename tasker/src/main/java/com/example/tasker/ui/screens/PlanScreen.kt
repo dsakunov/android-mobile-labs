@@ -125,7 +125,7 @@ private fun PlanContent(
 
         Card(
             Modifier.padding(horizontal = 22.dp).fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = colors.cardGreen)
+            colors = CardDefaults.cardColors(containerColor = colors.accentCard)
         ) {
             Row(
                 Modifier.padding(horizontal = 22.dp, vertical = 24.dp),

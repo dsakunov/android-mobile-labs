@@ -39,7 +39,7 @@ fun ScreenHeader(
         Column(Modifier.weight(1f)) {
             Text(
                 label,
-                color = colors.teal, fontSize = 12.sp, fontWeight = FontWeight.Bold,
+                color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.Bold,
                 letterSpacing = 1.2.sp
             )
             Spacer(Modifier.height(4.dp))

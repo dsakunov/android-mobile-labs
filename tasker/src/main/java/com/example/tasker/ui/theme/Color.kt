@@ -13,10 +13,10 @@ data class AppColors(
     val muted: Color,
     val placeholder: Color,
     val border: Color,
-    val teal: Color,
-    val tealDark: Color,
-    val tealSoft: Color,
-    val tealDisabled: Color,
+    val accent: Color,
+    val accentDark: Color,
+    val accentSoft: Color,
+    val accentDisabled: Color,
     val checkOff: Color,
     val checkOn: Color,
     val switchOff: Color,
@@ -27,8 +27,8 @@ data class AppColors(
     val amberBg: Color,
     val greenText: Color,
     val greenBg: Color,
-    val cardGreen: Color,
-    val ringMint: Color
+    val accentCard: Color,
+    val accentRing: Color
 )
 
 val LightColors = AppColors(
@@ -39,10 +39,10 @@ val LightColors = AppColors(
     muted = Color(0xFF6F7F7A),
     placeholder = Color(0xFF8E9B96),
     border = Color(0xFFE1E8E5),
-    teal = Color(0xFF128C7A),
-    tealDark = Color(0xFF0F6B5C),
-    tealSoft = Color(0xFFD6EEE7),
-    tealDisabled = Color(0xFF9ED0C6),
+    accent = Color(0xFF128C7A),
+    accentDark = Color(0xFF0F6B5C),
+    accentSoft = Color(0xFFD6EEE7),
+    accentDisabled = Color(0xFF9ED0C6),
     checkOff = Color(0xFFA8B7B1),
     checkOn = Color(0xFF5FB0A2),
     switchOff = Color(0xFFBBC8C3),
@@ -53,8 +53,8 @@ val LightColors = AppColors(
     amberBg = Color(0xFFF8E8C8),
     greenText = Color(0xFF3F8A57),
     greenBg = Color(0xFFDDEFE3),
-    cardGreen = Color(0xFF0A6B5B),
-    ringMint = Color(0xFFA8F0DD)
+    accentCard = Color(0xFF0A6B5B),
+    accentRing = Color(0xFFA8F0DD)
 )
 
 val DarkColors = AppColors(
@@ -65,10 +65,10 @@ val DarkColors = AppColors(
     muted = Color(0xFF93A59F),
     placeholder = Color(0xFF70827C),
     border = Color(0xFF2A3834),
-    teal = Color(0xFF1E9985),
-    tealDark = Color(0xFF6FD3C1),
-    tealSoft = Color(0xFF1E3B35),
-    tealDisabled = Color(0xFF2B4A43),
+    accent = Color(0xFF1E9985),
+    accentDark = Color(0xFF6FD3C1),
+    accentSoft = Color(0xFF1E3B35),
+    accentDisabled = Color(0xFF2B4A43),
     checkOff = Color(0xFF5B6E67),
     checkOn = Color(0xFF3FB6A0),
     switchOff = Color(0xFF3A4A45),
@@ -79,8 +79,8 @@ val DarkColors = AppColors(
     amberBg = Color(0xFF47381A),
     greenText = Color(0xFF6FCB8B),
     greenBg = Color(0xFF20402C),
-    cardGreen = Color(0xFF0F5C4F),
-    ringMint = Color(0xFFA8F0DD)
+    accentCard = Color(0xFF0F5C4F),
+    accentRing = Color(0xFFA8F0DD)
 )
 
 val LocalAppColors = staticCompositionLocalOf { LightColors }

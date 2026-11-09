@@ -25,7 +25,7 @@ fun ProgressRing(percent: Int, modifier: Modifier = Modifier) {
         CircularProgressIndicator(
             progress = { progress },
             modifier = Modifier.fillMaxSize(),
-            color = TaskerTheme.colors.ringMint,
+            color = TaskerTheme.colors.accentRing,
             strokeWidth = 7.dp,
             trackColor = Color.White.copy(alpha = 0.2f),
             strokeCap = StrokeCap.Round,

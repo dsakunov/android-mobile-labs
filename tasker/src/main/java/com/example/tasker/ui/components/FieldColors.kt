@@ -9,7 +9,7 @@ import com.example.tasker.ui.theme.TaskerTheme
 fun fieldColors(containerColor: Color = TaskerTheme.colors.bg) = OutlinedTextFieldDefaults.colors(
     focusedContainerColor = containerColor,
     unfocusedContainerColor = containerColor,
-    focusedBorderColor = TaskerTheme.colors.teal,
+    focusedBorderColor = TaskerTheme.colors.accent,
     unfocusedBorderColor = TaskerTheme.colors.border,
     focusedTextColor = TaskerTheme.colors.ink,
     unfocusedTextColor = TaskerTheme.colors.ink,

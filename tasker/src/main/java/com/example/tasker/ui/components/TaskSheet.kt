@@ -198,8 +198,8 @@ fun TaskSheet(
                     },
                     enabled = canSave,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colors.teal,
-                        disabledContainerColor = colors.tealDisabled,
+                        containerColor = colors.accent,
+                        disabledContainerColor = colors.accentDisabled,
                         disabledContentColor = Color.White
                     )
                 ) {

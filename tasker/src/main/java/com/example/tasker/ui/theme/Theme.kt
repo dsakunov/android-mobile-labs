@@ -1,38 +1,43 @@
 package com.example.tasker.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.tasker.domain.AccentColor
+import com.example.tasker.domain.ThemeMode
 
-private val LightColorScheme = lightColorScheme(
-    primary = LightColors.teal,
+private fun AppColors.toLightScheme(): ColorScheme = lightColorScheme(
+    primary = accent,
     onPrimary = Color.White,
-    surface = LightColors.surface,
-    background = LightColors.bg,
-    onSurface = LightColors.ink,
-    secondaryContainer = LightColors.tealSoft
+    surface = surface,
+    background = bg,
+    onSurface = ink,
+    secondaryContainer = accentSoft
 )
 
-private val DarkColorScheme = darkColorScheme(
-    primary = DarkColors.teal,
+private fun AppColors.toDarkScheme(): ColorScheme = darkColorScheme(
+    primary = accent,
     onPrimary = Color.White,
-    surface = DarkColors.surface,
-    background = DarkColors.bg,
-    onSurface = DarkColors.ink,
-    onBackground = DarkColors.ink,
-    onSurfaceVariant = DarkColors.muted,
-    secondaryContainer = DarkColors.tealSoft,
-    onSecondaryContainer = DarkColors.tealDark,
-    surfaceContainerHigh = DarkColors.surface,
-    surfaceContainerHighest = DarkColors.border,
-    outline = DarkColors.border,
-    outlineVariant = DarkColors.border
+    surface = surface,
+    background = bg,
+    onSurface = ink,
+    onBackground = ink,
+    onSurfaceVariant = muted,
+    secondaryContainer = accentSoft,
+    onSecondaryContainer = accentDark,
+    surfaceContainerHigh = surface,
+    surfaceContainerHighest = border,
+    outline = border,
+    outlineVariant = border
 )
 
 private val AppShapes = Shapes(
@@ -49,12 +54,25 @@ object TaskerTheme {
 }
 
 @Composable
-fun TaskerTheme(darkTheme: Boolean = false, content: @Composable () -> Unit) {
-    val colors = if (darkTheme) DarkColors else LightColors
+fun ThemeMode.isDark(): Boolean = when (this) {
+    ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    ThemeMode.LIGHT -> false
+    ThemeMode.DARK -> true
+}
+
+@Composable
+fun TaskerTheme(
+    darkTheme: Boolean = false,
+    accent: AccentColor = AccentColor.TEAL,
+    content: @Composable () -> Unit
+) {
+    val colors = remember(darkTheme, accent) {
+        (if (darkTheme) DarkColors else LightColors).withAccent(accent, darkTheme)
+    }
 
     CompositionLocalProvider(LocalAppColors provides colors) {
         MaterialTheme(
-            colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
+            colorScheme = if (darkTheme) colors.toDarkScheme() else colors.toLightScheme(),
             typography = Typography,
             shapes = AppShapes,
             content = content

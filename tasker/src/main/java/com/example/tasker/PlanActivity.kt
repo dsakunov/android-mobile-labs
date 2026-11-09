@@ -9,18 +9,20 @@ import com.example.tasker.data.repository.TaskRepository
 import com.example.tasker.data.utils.setupEdgeToEdge
 import com.example.tasker.ui.screens.PlanScreen
 import com.example.tasker.ui.theme.TaskerTheme
+import com.example.tasker.ui.theme.isDark
 
 class PlanActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         TaskRepository.init(applicationContext)
         setContent {
-            val darkTheme = SettingsRepository.settings.darkTheme
+            val settings = SettingsRepository.settings
+            val darkTheme = settings.themeMode.isDark()
             DisposableEffect(darkTheme) {
                 setupEdgeToEdge(darkTheme)
                 onDispose {}
             }
-            TaskerTheme(darkTheme = darkTheme) {
+            TaskerTheme(darkTheme = darkTheme, accent = settings.accent) {
                 PlanScreen()
             }
         }

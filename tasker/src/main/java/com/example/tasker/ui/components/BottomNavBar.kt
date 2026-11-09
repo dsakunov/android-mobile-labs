@@ -54,9 +54,9 @@ fun BottomNavBar(selected: Int, modifier: Modifier = Modifier) {
                     icon = { Icon(item.icon, null) },
                     label = { Text(stringResource(item.labelRes)) },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = colors.tealDark,
-                        selectedTextColor = colors.tealDark,
-                        indicatorColor = colors.tealSoft,
+                        selectedIconColor = colors.accentDark,
+                        selectedTextColor = colors.accentDark,
+                        indicatorColor = colors.accentSoft,
                         unselectedIconColor = colors.muted,
                         unselectedTextColor = colors.muted
                     )

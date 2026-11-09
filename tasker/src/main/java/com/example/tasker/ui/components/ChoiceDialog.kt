@@ -23,37 +23,45 @@ import com.example.tasker.domain.AppLanguage
 import com.example.tasker.ui.theme.TaskerTheme
 
 @Composable
-fun LanguageDialog(
-    selected: AppLanguage,
-    onSelect: (AppLanguage) -> Unit,
-    onDismiss: () -> Unit
+fun <T> ChoiceDialog(
+    title: String,
+    options: List<T>,
+    selected: T,
+    label: @Composable (T) -> String,
+    onSelect: (T) -> Unit,
+    onDismiss: () -> Unit,
+    leading: (@Composable (T) -> Unit)? = null
 ) {
     val colors = TaskerTheme.colors
 
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = colors.surface,
-        title = { Text(stringResource(R.string.language), color = colors.ink) },
+        title = { Text(title, color = colors.ink) },
         text = {
             Column {
-                AppLanguage.entries.forEach { language ->
+                options.forEach { option ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onSelect(language) }
+                            .clickable { onSelect(option) }
                             .padding(vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
-                            selected = language == selected,
+                            selected = option == selected,
                             onClick = null,
                             colors = RadioButtonDefaults.colors(
-                                selectedColor = colors.teal,
+                                selectedColor = colors.accent,
                                 unselectedColor = colors.checkOff
                             )
                         )
                         Spacer(Modifier.width(12.dp))
-                        Text(stringResource(language.nameRes), color = colors.ink)
+                        if (leading != null) {
+                            leading(option)
+                            Spacer(Modifier.width(12.dp))
+                        }
+                        Text(label(option), color = colors.ink)
                     }
                 }
             }
@@ -68,8 +76,15 @@ fun LanguageDialog(
 
 @Preview(showBackground = true)
 @Composable
-private fun LanguageDialogPreview() {
+private fun ChoiceDialogPreview() {
     PreviewWrapper {
-        LanguageDialog(selected = AppLanguage.RU, onSelect = {}, onDismiss = {})
+        ChoiceDialog(
+            title = "Язык",
+            options = AppLanguage.entries,
+            selected = AppLanguage.RU,
+            label = { stringResource(it.nameRes) },
+            onSelect = {},
+            onDismiss = {}
+        )
     }
 }

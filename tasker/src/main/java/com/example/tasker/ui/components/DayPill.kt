@@ -34,7 +34,7 @@ fun DayPill(
         onClick = onClick,
         modifier = modifier.width(48.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (selected) colors.tealSoft else Color.Transparent
+            containerColor = if (selected) colors.accentSoft else Color.Transparent
         )
     ) {
         Column(
@@ -45,7 +45,7 @@ fun DayPill(
                 day.weekdayShort(),
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (selected) colors.tealDark else colors.muted
+                color = if (selected) colors.accentDark else colors.muted
             )
             Text(
                 day.dayOfMonth.toString(),
@@ -55,7 +55,7 @@ fun DayPill(
             )
             Badge(
                 modifier = Modifier.padding(top = 4.dp),
-                containerColor = if (hasTasks) colors.teal else Color.Transparent
+                containerColor = if (hasTasks) colors.accent else Color.Transparent
             )
         }
     }

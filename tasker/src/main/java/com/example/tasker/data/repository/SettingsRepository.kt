@@ -8,8 +8,11 @@ import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.tasker.domain.AccentColor
 import com.example.tasker.domain.AppSettings
+import com.example.tasker.domain.ThemeMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -21,7 +24,8 @@ import kotlinx.coroutines.runBlocking
 private val Context.settingsDataStore by preferencesDataStore(name = "settings")
 
 object SettingsRepository {
-    private val DARK_THEME = booleanPreferencesKey("dark_theme")
+    private val THEME_MODE = stringPreferencesKey("theme_mode")
+    private val ACCENT = stringPreferencesKey("accent")
     private val HIDE_COMPLETED = booleanPreferencesKey("hide_completed")
     private val SHOW_PRIORITIES = booleanPreferencesKey("show_priorities")
 
@@ -41,16 +45,22 @@ object SettingsRepository {
     }
 
     private fun Preferences.toSettings() = AppSettings(
-        darkTheme = this[DARK_THEME] ?: false,
+        themeMode = enumOf(THEME_MODE, ThemeMode.LIGHT),
+        accent = enumOf(ACCENT, AccentColor.TEAL),
         hideCompleted = this[HIDE_COMPLETED] ?: false,
         showPriorities = this[SHOW_PRIORITIES] ?: true
     )
 
-    fun setDarkTheme(value: Boolean) = save { it[DARK_THEME] = value }
+    fun setThemeMode(value: ThemeMode) = save { it[THEME_MODE] = value.name }
+
+    fun setAccent(value: AccentColor) = save { it[ACCENT] = value.name }
 
     fun setHideCompleted(value: Boolean) = save { it[HIDE_COMPLETED] = value }
 
     fun setShowPriorities(value: Boolean) = save { it[SHOW_PRIORITIES] = value }
+
+    private inline fun <reified T : Enum<T>> Preferences.enumOf(key: Preferences.Key<String>, default: T): T =
+        enumValues<T>().firstOrNull { it.name == this[key] } ?: default
 
     private fun save(block: (MutablePreferences) -> Unit) {
         scope.launch { appContext.settingsDataStore.edit { block(it) } }

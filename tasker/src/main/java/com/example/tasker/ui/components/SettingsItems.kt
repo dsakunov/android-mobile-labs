@@ -5,9 +5,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -63,13 +67,21 @@ fun SettingRow(
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, null, tint = colors.tealDark)
+        Icon(icon, null, tint = colors.accentDark)
         Column(Modifier.weight(1f).padding(horizontal = 16.dp)) {
             Text(title, color = colors.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold)
             Text(subtitle, color = colors.muted, fontSize = 12.sp)
         }
         trailing()
     }
+}
+
+@Composable
+fun ChoiceValue(text: String) {
+    val colors = TaskerTheme.colors
+    Text(text, color = colors.muted, fontSize = 13.sp)
+    Spacer(Modifier.width(4.dp))
+    Icon(Icons.Outlined.ChevronRight, null, tint = colors.muted, modifier = Modifier.size(20.dp))
 }
 
 @Preview(showBackground = true)

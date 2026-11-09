@@ -71,7 +71,7 @@ fun TasksScreen(modifier: Modifier = Modifier) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { creating = true },
-                containerColor = colors.teal,
+                containerColor = colors.accent,
                 contentColor = Color.White
             ) {
                 Icon(Icons.Filled.Add, stringResource(R.string.add_task))
@@ -164,8 +164,8 @@ private fun TasksContent(
                         )
                     },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = colors.tealSoft,
-                        selectedLabelColor = colors.tealDark
+                        selectedContainerColor = colors.accentSoft,
+                        selectedLabelColor = colors.accentDark
                     ),
                     border = FilterChipDefaults.filterChipBorder(
                         enabled = true,
