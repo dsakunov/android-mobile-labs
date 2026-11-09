@@ -27,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,10 +36,13 @@ import com.example.tasker.R
 import com.example.tasker.data.repository.SettingsRepository
 import com.example.tasker.data.repository.TaskRepository
 import com.example.tasker.data.utils.rememberToday
+import com.example.tasker.data.utils.setAppLanguage
+import com.example.tasker.domain.AppLanguage
 import com.example.tasker.domain.AppSettings
 import com.example.tasker.ui.components.AppSwitch
 import com.example.tasker.ui.components.BottomNavBar
 import com.example.tasker.ui.components.ConfirmDialog
+import com.example.tasker.ui.components.LanguageDialog
 import com.example.tasker.ui.components.PreviewWrapper
 import com.example.tasker.ui.components.ScreenHeader
 import com.example.tasker.ui.components.SectionLabel
@@ -50,6 +54,8 @@ import com.example.tasker.ui.theme.TaskerTheme
 fun SettingsScreen(modifier: Modifier = Modifier) {
     val settings = SettingsRepository.settings
     val doneCount = TaskRepository.tasks.count { it.done }
+    val context = LocalContext.current
+    var showLanguage by rememberSaveable { mutableStateOf(false) }
     var showRemoveDone by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
@@ -60,11 +66,23 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
         SettingsContent(
             settings = settings,
             doneCount = doneCount,
+            onLanguageClick = { showLanguage = true },
             onDarkThemeChange = SettingsRepository::setDarkTheme,
             onHideCompletedChange = SettingsRepository::setHideCompleted,
             onShowPrioritiesChange = SettingsRepository::setShowPriorities,
             onRemoveDoneClick = { showRemoveDone = true },
             modifier = Modifier.padding(innerPadding)
+        )
+    }
+
+    if (showLanguage) {
+        LanguageDialog(
+            selected = AppLanguage.current(),
+            onSelect = { language ->
+                showLanguage = false
+                context.setAppLanguage(language.tag)
+            },
+            onDismiss = { showLanguage = false }
         )
     }
 
@@ -86,6 +104,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
 private fun SettingsContent(
     settings: AppSettings,
     doneCount: Int,
+    onLanguageClick: () -> Unit,
     onDarkThemeChange: (Boolean) -> Unit,
     onHideCompletedChange: (Boolean) -> Unit,
     onShowPrioritiesChange: (Boolean) -> Unit,
@@ -114,7 +133,7 @@ private fun SettingsContent(
                 icon = Icons.Outlined.Language,
                 title = stringResource(R.string.language),
                 subtitle = stringResource(R.string.language_sub),
-                onClick = { }
+                onClick = onLanguageClick
             ) {
                 Text(stringResource(R.string.language_current), color = colors.muted, fontSize = 13.sp)
                 Spacer(Modifier.width(4.dp))
@@ -178,6 +197,7 @@ private fun SettingsContentPreview() {
         SettingsContent(
             settings = AppSettings(),
             doneCount = 1,
+            onLanguageClick = {},
             onDarkThemeChange = {},
             onHideCompletedChange = {},
             onShowPrioritiesChange = {},

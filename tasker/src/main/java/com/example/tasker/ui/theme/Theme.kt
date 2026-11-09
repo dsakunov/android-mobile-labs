@@ -3,6 +3,7 @@ package com.example.tasker.ui.theme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -16,6 +17,22 @@ private val LightColorScheme = lightColorScheme(
     background = LightColors.bg,
     onSurface = LightColors.ink,
     secondaryContainer = LightColors.tealSoft
+)
+
+private val DarkColorScheme = darkColorScheme(
+    primary = DarkColors.teal,
+    onPrimary = Color.White,
+    surface = DarkColors.surface,
+    background = DarkColors.bg,
+    onSurface = DarkColors.ink,
+    onBackground = DarkColors.ink,
+    onSurfaceVariant = DarkColors.muted,
+    secondaryContainer = DarkColors.tealSoft,
+    onSecondaryContainer = DarkColors.tealDark,
+    surfaceContainerHigh = DarkColors.surface,
+    surfaceContainerHighest = DarkColors.border,
+    outline = DarkColors.border,
+    outlineVariant = DarkColors.border
 )
 
 private val AppShapes = Shapes(
@@ -32,10 +49,12 @@ object TaskerTheme {
 }
 
 @Composable
-fun TaskerTheme(content: @Composable () -> Unit) {
-    CompositionLocalProvider(LocalAppColors provides LightColors) {
+fun TaskerTheme(darkTheme: Boolean = false, content: @Composable () -> Unit) {
+    val colors = if (darkTheme) DarkColors else LightColors
+
+    CompositionLocalProvider(LocalAppColors provides colors) {
         MaterialTheme(
-            colorScheme = LightColorScheme,
+            colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
             typography = Typography,
             shapes = AppShapes,
             content = content

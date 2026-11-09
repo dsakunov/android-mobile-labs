@@ -49,6 +49,8 @@
     <string name="language">Язык</string>
     <string name="language_sub">Язык интерфейса</string>
     <string name="language_current">Русский</string>
+    <string name="language_name_ru" translatable="false">Русский</string>
+    <string name="language_name_en" translatable="false">English</string>
     <string name="dark_theme">Тёмная тема</string>
     <string name="dark_theme_sub">Использовать тёмное оформление</string>
     <string name="hide_done">Скрывать выполненные</string>

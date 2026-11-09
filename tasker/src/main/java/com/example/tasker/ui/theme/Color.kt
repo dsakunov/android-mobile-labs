@@ -57,4 +57,30 @@ val LightColors = AppColors(
     ringMint = Color(0xFFA8F0DD)
 )
 
+val DarkColors = AppColors(
+    bg = Color(0xFF0F1513),
+    surface = Color(0xFF18211E),
+    surfaceDone = Color(0xFF141C19),
+    ink = Color(0xFFE6EFEC),
+    muted = Color(0xFF93A59F),
+    placeholder = Color(0xFF70827C),
+    border = Color(0xFF2A3834),
+    teal = Color(0xFF1E9985),
+    tealDark = Color(0xFF6FD3C1),
+    tealSoft = Color(0xFF1E3B35),
+    tealDisabled = Color(0xFF2B4A43),
+    checkOff = Color(0xFF5B6E67),
+    checkOn = Color(0xFF3FB6A0),
+    switchOff = Color(0xFF3A4A45),
+    redText = Color(0xFFFF8A7D),
+    redBg = Color(0xFF4A2724),
+    amberText = Color(0xFFF0B964),
+    amberMeta = Color(0xFFE0A23F),
+    amberBg = Color(0xFF47381A),
+    greenText = Color(0xFF6FCB8B),
+    greenBg = Color(0xFF20402C),
+    cardGreen = Color(0xFF0F5C4F),
+    ringMint = Color(0xFFA8F0DD)
+)
+
 val LocalAppColors = staticCompositionLocalOf { LightColors }
