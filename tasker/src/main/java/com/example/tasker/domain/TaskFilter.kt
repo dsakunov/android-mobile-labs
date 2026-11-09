@@ -10,10 +10,13 @@ enum class TaskFilter(@StringRes val labelRes: Int) {
     DONE(R.string.filter_done)
 }
 
-fun Task.matches(filter: TaskFilter, today: LocalDate): Boolean = when (filter) {
-    TaskFilter.ALL -> true
-    TaskFilter.TODAY -> date == today
-    TaskFilter.DONE -> done
+fun Task.matches(filter: TaskFilter, today: LocalDate, hideCompleted: Boolean = false): Boolean {
+    if (hideCompleted && done && filter != TaskFilter.DONE) return false
+    return when (filter) {
+        TaskFilter.ALL -> true
+        TaskFilter.TODAY -> date == today
+        TaskFilter.DONE -> done
+    }
 }
 
 fun Task.matchesQuery(query: String): Boolean {

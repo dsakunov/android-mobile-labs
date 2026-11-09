@@ -35,6 +35,27 @@ class TaskFilterTest {
     }
 
     @Test
+    fun hideCompletedRemovesDoneTasksFromAllFilter() {
+        assertFalse(doneTask.matches(TaskFilter.ALL, today, hideCompleted = true))
+    }
+
+    @Test
+    fun hideCompletedRemovesDoneTasksFromTodayFilter() {
+        val doneToday = doneTask.copy(date = today)
+        assertFalse(doneToday.matches(TaskFilter.TODAY, today, hideCompleted = true))
+    }
+
+    @Test
+    fun hideCompletedKeepsDoneFilterFull() {
+        assertTrue(doneTask.matches(TaskFilter.DONE, today, hideCompleted = true))
+    }
+
+    @Test
+    fun hideCompletedKeepsActiveTasks() {
+        assertTrue(todayTask.matches(TaskFilter.ALL, today, hideCompleted = true))
+    }
+
+    @Test
     fun queryIgnoresCase() {
         assertTrue(doneTask.matchesQuery("KOTLIN"))
     }

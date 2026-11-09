@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tasker.R
+import com.example.tasker.data.repository.SettingsRepository
 import com.example.tasker.data.repository.TaskRepository
 import com.example.tasker.data.utils.fullDayText
 import com.example.tasker.data.utils.monthYearCaps
@@ -59,6 +60,8 @@ fun PlanScreen(modifier: Modifier = Modifier) {
         PlanContent(
             tasks = TaskRepository.tasks,
             loaded = TaskRepository.loaded,
+            hideCompleted = SettingsRepository.settings.hideCompleted,
+            showPriorities = SettingsRepository.settings.showPriorities,
             onToggle = TaskRepository::toggle,
             onEdit = { editingId = it.id },
             modifier = Modifier.padding(innerPadding)
@@ -79,6 +82,8 @@ fun PlanScreen(modifier: Modifier = Modifier) {
 private fun PlanContent(
     tasks: List<Task>,
     loaded: Boolean,
+    hideCompleted: Boolean,
+    showPriorities: Boolean,
     onToggle: (Task) -> Unit,
     onEdit: (Task) -> Unit,
     modifier: Modifier = Modifier
@@ -90,6 +95,7 @@ private fun PlanContent(
     val selected = LocalDate.ofEpochDay(selectedEpoch)
 
     val dayTasks = tasks.filter { it.date == selected }
+    val shownTasks = if (hideCompleted) dayTasks.filter { !it.done } else dayTasks
     val doneCount = dayTasks.count { it.done }
     val percent = if (dayTasks.isEmpty()) 0 else doneCount * 100 / dayTasks.size
 
@@ -154,13 +160,18 @@ private fun PlanContent(
 
         Spacer(Modifier.height(14.dp))
 
-        if (dayTasks.isNotEmpty()) {
+        if (shownTasks.isNotEmpty()) {
             LazyColumn(
                 contentPadding = PaddingValues(start = 22.dp, end = 22.dp, bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(dayTasks, key = { it.id }) { task ->
-                    TaskCard(task, onToggle = { onToggle(task) }, onClick = { onEdit(task) })
+                items(shownTasks, key = { it.id }) { task ->
+                    TaskCard(
+                        task = task,
+                        onToggle = { onToggle(task) },
+                        onClick = { onEdit(task) },
+                        showPriority = showPriorities
+                    )
                 }
             }
         } else if (loaded) {
@@ -178,6 +189,8 @@ private fun PlanContentPreview() {
         PlanContent(
             tasks = sampleTasks,
             loaded = true,
+            hideCompleted = false,
+            showPriorities = true,
             onToggle = {},
             onEdit = {}
         )

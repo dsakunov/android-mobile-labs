@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tasker.R
+import com.example.tasker.data.repository.SettingsRepository
 import com.example.tasker.data.repository.TaskRepository
 import com.example.tasker.data.utils.rememberToday
 import com.example.tasker.domain.Task
@@ -80,6 +81,8 @@ fun TasksScreen(modifier: Modifier = Modifier) {
         TasksContent(
             tasks = TaskRepository.tasks,
             loaded = TaskRepository.loaded,
+            hideCompleted = SettingsRepository.settings.hideCompleted,
+            showPriorities = SettingsRepository.settings.showPriorities,
             onToggle = TaskRepository::toggle,
             onEdit = { editingId = it.id },
             modifier = Modifier.padding(innerPadding)
@@ -106,6 +109,8 @@ fun TasksScreen(modifier: Modifier = Modifier) {
 private fun TasksContent(
     tasks: List<Task>,
     loaded: Boolean,
+    hideCompleted: Boolean,
+    showPriorities: Boolean,
     onToggle: (Task) -> Unit,
     onEdit: (Task) -> Unit,
     modifier: Modifier = Modifier
@@ -115,7 +120,7 @@ private fun TasksContent(
     var filter by rememberSaveable { mutableStateOf(TaskFilter.ALL) }
     var query by rememberSaveable { mutableStateOf("") }
 
-    val visible = tasks.filter { it.matches(filter, today) && it.matchesQuery(query) }
+    val visible = tasks.filter { it.matches(filter, today, hideCompleted) && it.matchesQuery(query) }
 
     Column(modifier.fillMaxSize()) {
         ScreenHeader(
@@ -144,7 +149,7 @@ private fun TasksContent(
         ) {
             TaskFilter.entries.forEach { f ->
                 val name = stringResource(f.labelRes)
-                val count = tasks.count { it.matches(f, today) }
+                val count = tasks.count { it.matches(f, today, hideCompleted) }
                 FilterChip(
                     selected = filter == f,
                     onClick = { filter = f },
@@ -180,7 +185,12 @@ private fun TasksContent(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(visible, key = { it.id }) { task ->
-                    TaskCard(task, onToggle = { onToggle(task) }, onClick = { onEdit(task) })
+                    TaskCard(
+                        task = task,
+                        onToggle = { onToggle(task) },
+                        onClick = { onEdit(task) },
+                        showPriority = showPriorities
+                    )
                 }
             }
         } else if (loaded) {
@@ -198,6 +208,8 @@ private fun TasksContentPreview() {
         TasksContent(
             tasks = sampleTasks,
             loaded = true,
+            hideCompleted = false,
+            showPriorities = true,
             onToggle = {},
             onEdit = {}
         )

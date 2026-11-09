@@ -42,7 +42,8 @@ fun TaskCard(
     task: Task,
     onToggle: () -> Unit,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showPriority: Boolean = true
 ) {
     val colors = TaskerTheme.colors
     OutlinedCard(
@@ -83,9 +84,14 @@ fun TaskCard(
                 if (hasNote) NoteLine(task.note)
                 Text(
                     buildAnnotatedString {
-                        withStyle(SpanStyle(color = colors.muted)) { append("${task.date.shortText()}  ·  ") }
-                        withStyle(SpanStyle(color = task.priority.textColor(), fontWeight = FontWeight.Bold)) {
-                            append(stringResource(task.priority.labelRes))
+                        withStyle(SpanStyle(color = colors.muted)) {
+                            append(task.date.shortText())
+                            if (showPriority) append("  ·  ")
+                        }
+                        if (showPriority) {
+                            withStyle(SpanStyle(color = task.priority.textColor(), fontWeight = FontWeight.Bold)) {
+                                append(stringResource(task.priority.labelRes))
+                            }
                         }
                     },
                     fontSize = 12.sp,
@@ -116,6 +122,7 @@ private fun TaskCardPreview() {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             TaskCard(task = sampleTask, onToggle = {}, onClick = {})
             TaskCard(task = sampleTask.copy(done = true), onToggle = {}, onClick = {})
+            TaskCard(task = sampleTask, onToggle = {}, onClick = {}, showPriority = false)
         }
     }
 }
