@@ -7,5 +7,6 @@ data class AppSettings(
     val defaultPriority: Priority = Priority.MEDIUM,
     val dateStyle: DateStyle = DateStyle.SHORT,
     val hideCompleted: Boolean = false,
-    val showPriorities: Boolean = true
+    val showPriorities: Boolean = true,
+    val highlightOverdue: Boolean = true
 )

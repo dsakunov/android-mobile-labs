@@ -9,6 +9,7 @@
     <string name="filter_all">All</string>
     <string name="filter_today">Today</string>
     <string name="filter_done">Done</string>
+    <string name="overdue">Overdue</string>
     <string name="no_tasks">No tasks</string>
     <string name="add_task">Add task</string>
 
@@ -29,6 +30,8 @@
     <string name="delete">Delete</string>
     <string name="delete_task_title">Delete task?</string>
     <string name="delete_task_text">Task “%1$s” will be permanently deleted.</string>
+    <string name="swipe_done">Done</string>
+    <string name="swipe_undone">Not done</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
     <string name="ok">OK</string>
@@ -72,6 +75,8 @@
     <string name="hide_done_sub">Automatically hide completed tasks</string>
     <string name="show_priorities">Show priorities</string>
     <string name="show_priorities_sub">Show priority statuses</string>
+    <string name="highlight_overdue">Overdue tasks</string>
+    <string name="highlight_overdue_sub">Mark in red and show a filter</string>
     <string name="remove_done">Remove completed</string>
     <string name="remove_done_sub">Clear all finished tasks · %1$d</string>
     <string name="remove_done_title">Delete completed tasks?</string>

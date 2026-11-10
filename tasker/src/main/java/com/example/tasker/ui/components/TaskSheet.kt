@@ -228,11 +228,9 @@ fun TaskSheet(
         ) { DatePicker(state = state) }
     }
 
-    if (showDeleteConfirm) {
-        ConfirmDialog(
-            title = stringResource(R.string.delete_task_title),
-            text = stringResource(R.string.delete_task_text, initial?.title.orEmpty()),
-            confirmText = stringResource(R.string.delete),
+    if (showDeleteConfirm && initial != null) {
+        DeleteTaskDialog(
+            task = initial,
             onConfirm = {
                 showDeleteConfirm = false
                 onDelete()

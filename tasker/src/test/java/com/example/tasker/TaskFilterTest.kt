@@ -3,6 +3,7 @@ package com.example.tasker
 import com.example.tasker.domain.Priority
 import com.example.tasker.domain.Task
 import com.example.tasker.domain.TaskFilter
+import com.example.tasker.domain.isOverdue
 import com.example.tasker.domain.matches
 import com.example.tasker.domain.matchesQuery
 import org.junit.Assert.assertEquals
@@ -73,5 +74,24 @@ class TaskFilterTest {
     @Test
     fun unknownQueryMatchesNothing() {
         assertFalse(todayTask.matchesQuery("математика"))
+    }
+
+    @Test
+    fun taskInThePastIsOverdueUntilDone() {
+        val pastTask = todayTask.copy(date = today.minusDays(1))
+        assertTrue(pastTask.isOverdue(today))
+        assertFalse(pastTask.copy(done = true).isOverdue(today))
+    }
+
+    @Test
+    fun taskOfTodayIsNotOverdue() {
+        assertFalse(todayTask.isOverdue(today))
+    }
+
+    @Test
+    fun overdueFilterMatchesOnlyUnfinishedPastTasks() {
+        val overdueTask = todayTask.copy(id = 3, date = today.minusDays(4))
+        val all = tasks + overdueTask
+        assertEquals(listOf(overdueTask), all.filter { it.matches(TaskFilter.OVERDUE, today) })
     }
 }

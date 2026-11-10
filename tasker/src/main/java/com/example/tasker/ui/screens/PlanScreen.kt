@@ -38,11 +38,14 @@ import com.example.tasker.data.utils.rememberToday
 import com.example.tasker.domain.AppSettings
 import com.example.tasker.domain.Task
 import com.example.tasker.domain.comparator
+import com.example.tasker.domain.isOverdue
 import com.example.tasker.ui.components.BottomNavBar
 import com.example.tasker.ui.components.DayPill
+import com.example.tasker.ui.components.DeleteTaskDialog
 import com.example.tasker.ui.components.PreviewWrapper
 import com.example.tasker.ui.components.ProgressRing
 import com.example.tasker.ui.components.ScreenHeader
+import com.example.tasker.ui.components.SwipeTaskCard
 import com.example.tasker.ui.components.TaskCard
 import com.example.tasker.ui.components.TaskSheet
 import com.example.tasker.ui.components.sampleTasks
@@ -52,7 +55,10 @@ import java.time.LocalDate
 @Composable
 fun PlanScreen(modifier: Modifier = Modifier) {
     var editingId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var deletingId by rememberSaveable { mutableStateOf<Long?>(null) }
+
     val editing = TaskRepository.tasks.firstOrNull { it.id == editingId }
+    val deleting = TaskRepository.tasks.firstOrNull { it.id == deletingId }
 
     Scaffold(
         modifier = modifier,
@@ -65,7 +71,19 @@ fun PlanScreen(modifier: Modifier = Modifier) {
             settings = SettingsRepository.settings,
             onToggle = TaskRepository::toggle,
             onEdit = { editingId = it.id },
+            onDelete = { deletingId = it.id },
             modifier = Modifier.padding(innerPadding)
+        )
+    }
+
+    if (deleting != null) {
+        DeleteTaskDialog(
+            task = deleting,
+            onConfirm = {
+                TaskRepository.delete(deleting.id)
+                deletingId = null
+            },
+            onDismiss = { deletingId = null }
         )
     }
 
@@ -86,6 +104,7 @@ private fun PlanContent(
     settings: AppSettings,
     onToggle: (Task) -> Unit,
     onEdit: (Task) -> Unit,
+    onDelete: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val colors = TaskerTheme.colors
@@ -168,13 +187,20 @@ private fun PlanContent(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(shownTasks, key = { it.id }) { task ->
-                    TaskCard(
-                        task = task,
-                        onToggle = { onToggle(task) },
-                        onClick = { onEdit(task) },
-                        showPriority = settings.showPriorities,
-                        dateStyle = settings.dateStyle
-                    )
+                    SwipeTaskCard(
+                        done = task.done,
+                        onSwipeDone = { onToggle(task) },
+                        onSwipeDelete = { onDelete(task) }
+                    ) {
+                        TaskCard(
+                            task = task,
+                            onToggle = { onToggle(task) },
+                            onClick = { onEdit(task) },
+                            showPriority = settings.showPriorities,
+                            dateStyle = settings.dateStyle,
+                            overdue = settings.highlightOverdue && task.isOverdue(today)
+                        )
+                    }
                 }
             }
         } else if (loaded) {
@@ -194,7 +220,8 @@ private fun PlanContentPreview() {
             loaded = true,
             settings = AppSettings(),
             onToggle = {},
-            onEdit = {}
+            onEdit = {},
+            onDelete = {}
         )
     }
 }

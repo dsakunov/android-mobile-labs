@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.tasker.R
 import com.example.tasker.data.utils.styledText
 import com.example.tasker.domain.DateStyle
 import com.example.tasker.domain.Task
@@ -45,7 +46,8 @@ fun TaskCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     showPriority: Boolean = true,
-    dateStyle: DateStyle = DateStyle.SHORT
+    dateStyle: DateStyle = DateStyle.SHORT,
+    overdue: Boolean = false
 ) {
     val colors = TaskerTheme.colors
     OutlinedCard(
@@ -54,7 +56,7 @@ fun TaskCard(
         colors = CardDefaults.outlinedCardColors(
             containerColor = if (task.done) colors.surfaceDone else colors.surface
         ),
-        border = BorderStroke(1.dp, colors.border)
+        border = BorderStroke(1.dp, if (overdue) colors.redText else colors.border)
     ) {
         Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -88,7 +90,13 @@ fun TaskCard(
                     buildAnnotatedString {
                         withStyle(SpanStyle(color = colors.muted)) {
                             append(task.date.styledText(dateStyle))
-                            if (showPriority) append("  ·  ")
+                            if (overdue || showPriority) append("  ·  ")
+                        }
+                        if (overdue) {
+                            withStyle(SpanStyle(color = colors.redText, fontWeight = FontWeight.Bold)) {
+                                append(stringResource(R.string.overdue))
+                                if (showPriority) append("  ·  ")
+                            }
                         }
                         if (showPriority) {
                             withStyle(SpanStyle(color = task.priority.textColor(), fontWeight = FontWeight.Bold)) {
@@ -126,6 +134,7 @@ private fun TaskCardPreview() {
             TaskCard(task = sampleTask.copy(done = true), onToggle = {}, onClick = {})
             TaskCard(task = sampleTask, onToggle = {}, onClick = {}, showPriority = false)
             TaskCard(task = sampleTask, onToggle = {}, onClick = {}, dateStyle = DateStyle.NUMERIC)
+            TaskCard(task = sampleTask, onToggle = {}, onClick = {}, overdue = true)
         }
     }
 }

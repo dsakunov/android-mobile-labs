@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.EventBusy
 import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
@@ -79,6 +80,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             onOpenDialog = { dialog = it },
             onHideCompletedChange = SettingsRepository::setHideCompleted,
             onShowPrioritiesChange = SettingsRepository::setShowPriorities,
+            onHighlightOverdueChange = SettingsRepository::setHighlightOverdue,
             modifier = Modifier.padding(innerPadding)
         )
     }
@@ -189,6 +191,7 @@ private fun SettingsContent(
     onOpenDialog: (SettingsDialog) -> Unit,
     onHideCompletedChange: (Boolean) -> Unit,
     onShowPrioritiesChange: (Boolean) -> Unit,
+    onHighlightOverdueChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val colors = TaskerTheme.colors
@@ -268,6 +271,13 @@ private fun SettingsContent(
                 subtitle = stringResource(R.string.show_priorities_sub),
                 onClick = { onShowPrioritiesChange(!settings.showPriorities) }
             ) { AppSwitch(settings.showPriorities) }
+            HorizontalDivider(color = colors.border)
+            SettingRow(
+                icon = Icons.Outlined.EventBusy,
+                title = stringResource(R.string.highlight_overdue),
+                subtitle = stringResource(R.string.highlight_overdue_sub),
+                onClick = { onHighlightOverdueChange(!settings.highlightOverdue) }
+            ) { AppSwitch(settings.highlightOverdue) }
         }
 
         Spacer(Modifier.height(24.dp))
@@ -305,7 +315,8 @@ private fun SettingsContentPreview() {
             doneCount = 1,
             onOpenDialog = {},
             onHideCompletedChange = {},
-            onShowPrioritiesChange = {}
+            onShowPrioritiesChange = {},
+            onHighlightOverdueChange = {}
         )
     }
 }

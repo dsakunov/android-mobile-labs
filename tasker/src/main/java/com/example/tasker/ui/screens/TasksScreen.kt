@@ -1,5 +1,6 @@
 package com.example.tasker.ui.screens
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Search
@@ -46,11 +48,14 @@ import com.example.tasker.domain.AppSettings
 import com.example.tasker.domain.Task
 import com.example.tasker.domain.TaskFilter
 import com.example.tasker.domain.comparator
+import com.example.tasker.domain.isOverdue
 import com.example.tasker.domain.matches
 import com.example.tasker.domain.matchesQuery
 import com.example.tasker.ui.components.BottomNavBar
+import com.example.tasker.ui.components.DeleteTaskDialog
 import com.example.tasker.ui.components.PreviewWrapper
 import com.example.tasker.ui.components.ScreenHeader
+import com.example.tasker.ui.components.SwipeTaskCard
 import com.example.tasker.ui.components.TaskCard
 import com.example.tasker.ui.components.TaskSheet
 import com.example.tasker.ui.components.fieldColors
@@ -63,7 +68,10 @@ fun TasksScreen(modifier: Modifier = Modifier) {
     var editingId by rememberSaveable { mutableStateOf<Long?>(null) }
     var creating by rememberSaveable { mutableStateOf(false) }
 
+    var deletingId by rememberSaveable { mutableStateOf<Long?>(null) }
+
     val editing = TaskRepository.tasks.firstOrNull { it.id == editingId }
+    val deleting = TaskRepository.tasks.firstOrNull { it.id == deletingId }
     val sheetOpen = creating || editing != null
 
     Scaffold(
@@ -86,7 +94,19 @@ fun TasksScreen(modifier: Modifier = Modifier) {
             settings = SettingsRepository.settings,
             onToggle = TaskRepository::toggle,
             onEdit = { editingId = it.id },
+            onDelete = { deletingId = it.id },
             modifier = Modifier.padding(innerPadding)
+        )
+    }
+
+    if (deleting != null) {
+        DeleteTaskDialog(
+            task = deleting,
+            onConfirm = {
+                TaskRepository.delete(deleting.id)
+                deletingId = null
+            },
+            onDismiss = { deletingId = null }
         )
     }
 
@@ -114,6 +134,7 @@ private fun TasksContent(
     settings: AppSettings,
     onToggle: (Task) -> Unit,
     onEdit: (Task) -> Unit,
+    onDelete: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val colors = TaskerTheme.colors
@@ -121,8 +142,11 @@ private fun TasksContent(
     var filter by rememberSaveable { mutableStateOf(TaskFilter.ALL) }
     var query by rememberSaveable { mutableStateOf("") }
 
+    val filters = TaskFilter.entries.filter { it != TaskFilter.OVERDUE || settings.highlightOverdue }
+    val activeFilter = filter.takeIf { it in filters } ?: TaskFilter.ALL
+
     val visible = tasks
-        .filter { it.matches(filter, today, settings.hideCompleted) && it.matchesQuery(query) }
+        .filter { it.matches(activeFilter, today, settings.hideCompleted) && it.matchesQuery(query) }
         .sortedWith(settings.sort.comparator())
 
     Column(modifier.fillMaxSize()) {
@@ -147,19 +171,20 @@ private fun TasksContent(
         Spacer(Modifier.height(12.dp))
 
         Row(
-            Modifier.padding(horizontal = 22.dp),
+            Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 22.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            TaskFilter.entries.forEach { f ->
+            filters.forEach { f ->
                 val name = stringResource(f.labelRes)
                 val count = tasks.count { it.matches(f, today, settings.hideCompleted) }
                 FilterChip(
-                    selected = filter == f,
+                    selected = activeFilter == f,
                     onClick = { filter = f },
                     label = {
                         Text(
                             buildAnnotatedString {
-                                withStyle(SpanStyle(fontWeight = if (filter == f) FontWeight.Bold else FontWeight.Normal)) {
+                                val weight = if (activeFilter == f) FontWeight.Bold else FontWeight.Normal
+                                withStyle(SpanStyle(fontWeight = weight)) {
                                     append(name)
                                 }
                                 withStyle(SpanStyle(fontWeight = FontWeight.Normal)) { append("  $count") }
@@ -172,7 +197,7 @@ private fun TasksContent(
                     ),
                     border = FilterChipDefaults.filterChipBorder(
                         enabled = true,
-                        selected = filter == f,
+                        selected = activeFilter == f,
                         borderColor = colors.border,
                         selectedBorderColor = Color.Transparent
                     )
@@ -188,13 +213,20 @@ private fun TasksContent(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(visible, key = { it.id }) { task ->
-                    TaskCard(
-                        task = task,
-                        onToggle = { onToggle(task) },
-                        onClick = { onEdit(task) },
-                        showPriority = settings.showPriorities,
-                        dateStyle = settings.dateStyle
-                    )
+                    SwipeTaskCard(
+                        done = task.done,
+                        onSwipeDone = { onToggle(task) },
+                        onSwipeDelete = { onDelete(task) }
+                    ) {
+                        TaskCard(
+                            task = task,
+                            onToggle = { onToggle(task) },
+                            onClick = { onEdit(task) },
+                            showPriority = settings.showPriorities,
+                            dateStyle = settings.dateStyle,
+                            overdue = settings.highlightOverdue && task.isOverdue(today)
+                        )
+                    }
                 }
             }
         } else if (loaded) {
@@ -214,7 +246,8 @@ private fun TasksContentPreview() {
             loaded = true,
             settings = AppSettings(),
             onToggle = {},
-            onEdit = {}
+            onEdit = {},
+            onDelete = {}
         )
     }
 }
