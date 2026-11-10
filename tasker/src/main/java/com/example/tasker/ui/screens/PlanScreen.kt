@@ -35,7 +35,9 @@ import com.example.tasker.data.repository.TaskRepository
 import com.example.tasker.data.utils.fullDayText
 import com.example.tasker.data.utils.monthYearCaps
 import com.example.tasker.data.utils.rememberToday
+import com.example.tasker.domain.AppSettings
 import com.example.tasker.domain.Task
+import com.example.tasker.domain.comparator
 import com.example.tasker.ui.components.BottomNavBar
 import com.example.tasker.ui.components.DayPill
 import com.example.tasker.ui.components.PreviewWrapper
@@ -60,8 +62,7 @@ fun PlanScreen(modifier: Modifier = Modifier) {
         PlanContent(
             tasks = TaskRepository.tasks,
             loaded = TaskRepository.loaded,
-            hideCompleted = SettingsRepository.settings.hideCompleted,
-            showPriorities = SettingsRepository.settings.showPriorities,
+            settings = SettingsRepository.settings,
             onToggle = TaskRepository::toggle,
             onEdit = { editingId = it.id },
             modifier = Modifier.padding(innerPadding)
@@ -82,8 +83,7 @@ fun PlanScreen(modifier: Modifier = Modifier) {
 private fun PlanContent(
     tasks: List<Task>,
     loaded: Boolean,
-    hideCompleted: Boolean,
-    showPriorities: Boolean,
+    settings: AppSettings,
     onToggle: (Task) -> Unit,
     onEdit: (Task) -> Unit,
     modifier: Modifier = Modifier
@@ -95,7 +95,9 @@ private fun PlanContent(
     val selected = LocalDate.ofEpochDay(selectedEpoch)
 
     val dayTasks = tasks.filter { it.date == selected }
-    val shownTasks = if (hideCompleted) dayTasks.filter { !it.done } else dayTasks
+    val shownTasks = dayTasks
+        .filter { !settings.hideCompleted || !it.done }
+        .sortedWith(settings.sort.comparator())
     val doneCount = dayTasks.count { it.done }
     val percent = if (dayTasks.isEmpty()) 0 else doneCount * 100 / dayTasks.size
 
@@ -170,7 +172,8 @@ private fun PlanContent(
                         task = task,
                         onToggle = { onToggle(task) },
                         onClick = { onEdit(task) },
-                        showPriority = showPriorities
+                        showPriority = settings.showPriorities,
+                        dateStyle = settings.dateStyle
                     )
                 }
             }
@@ -189,8 +192,7 @@ private fun PlanContentPreview() {
         PlanContent(
             tasks = sampleTasks,
             loaded = true,
-            hideCompleted = false,
-            showPriorities = true,
+            settings = AppSettings(),
             onToggle = {},
             onEdit = {}
         )

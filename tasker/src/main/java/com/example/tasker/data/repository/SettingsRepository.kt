@@ -12,6 +12,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.tasker.domain.AccentColor
 import com.example.tasker.domain.AppSettings
+import com.example.tasker.domain.DateStyle
+import com.example.tasker.domain.Priority
+import com.example.tasker.domain.TaskSort
 import com.example.tasker.domain.ThemeMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +29,9 @@ private val Context.settingsDataStore by preferencesDataStore(name = "settings")
 object SettingsRepository {
     private val THEME_MODE = stringPreferencesKey("theme_mode")
     private val ACCENT = stringPreferencesKey("accent")
+    private val SORT = stringPreferencesKey("sort")
+    private val DEFAULT_PRIORITY = stringPreferencesKey("default_priority")
+    private val DATE_STYLE = stringPreferencesKey("date_style")
     private val HIDE_COMPLETED = booleanPreferencesKey("hide_completed")
     private val SHOW_PRIORITIES = booleanPreferencesKey("show_priorities")
 
@@ -47,6 +53,9 @@ object SettingsRepository {
     private fun Preferences.toSettings() = AppSettings(
         themeMode = enumOf(THEME_MODE, ThemeMode.LIGHT),
         accent = enumOf(ACCENT, AccentColor.TEAL),
+        sort = enumOf(SORT, TaskSort.DATE_ASC),
+        defaultPriority = enumOf(DEFAULT_PRIORITY, Priority.MEDIUM),
+        dateStyle = enumOf(DATE_STYLE, DateStyle.SHORT),
         hideCompleted = this[HIDE_COMPLETED] ?: false,
         showPriorities = this[SHOW_PRIORITIES] ?: true
     )
@@ -54,6 +63,12 @@ object SettingsRepository {
     fun setThemeMode(value: ThemeMode) = save { it[THEME_MODE] = value.name }
 
     fun setAccent(value: AccentColor) = save { it[ACCENT] = value.name }
+
+    fun setSort(value: TaskSort) = save { it[SORT] = value.name }
+
+    fun setDefaultPriority(value: Priority) = save { it[DEFAULT_PRIORITY] = value.name }
+
+    fun setDateStyle(value: DateStyle) = save { it[DATE_STYLE] = value.name }
 
     fun setHideCompleted(value: Boolean) = save { it[HIDE_COMPLETED] = value }
 

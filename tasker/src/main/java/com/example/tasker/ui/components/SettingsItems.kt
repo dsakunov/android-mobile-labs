@@ -77,11 +77,19 @@ fun SettingRow(
 }
 
 @Composable
+fun ChevronIcon() {
+    Icon(
+        Icons.Outlined.ChevronRight, null,
+        tint = TaskerTheme.colors.muted,
+        modifier = Modifier.size(20.dp)
+    )
+}
+
+@Composable
 fun ChoiceValue(text: String) {
-    val colors = TaskerTheme.colors
-    Text(text, color = colors.muted, fontSize = 13.sp)
+    Text(text, color = TaskerTheme.colors.muted, fontSize = 13.sp)
     Spacer(Modifier.width(4.dp))
-    Icon(Icons.Outlined.ChevronRight, null, tint = colors.muted, modifier = Modifier.size(20.dp))
+    ChevronIcon()
 }
 
 @Preview(showBackground = true)

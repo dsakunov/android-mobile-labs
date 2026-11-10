@@ -42,6 +42,7 @@
 
     <string name="settings_title">Настройки</string>
     <string name="section_general">ОБЩИЕ</string>
+    <string name="section_tasks">ЗАДАЧИ</string>
     <string name="section_data">ДАННЫЕ</string>
     <string name="section_about">О ПРИЛОЖЕНИИ</string>
     <string name="language">Язык</string>
@@ -56,6 +57,18 @@
     <string name="accent_teal">Бирюзовый</string>
     <string name="accent_blue">Синий</string>
     <string name="accent_orange">Оранжевый</string>
+    <string name="sort">Сортировка</string>
+    <string name="sort_date_asc">Дата: сначала ближайшие</string>
+    <string name="sort_date_desc">Дата: сначала дальние</string>
+    <string name="sort_priority_asc">Приоритет: от низкого к высокому</string>
+    <string name="sort_priority_desc">Приоритет: от высокого к низкому</string>
+    <string name="default_priority">Приоритет по умолчанию</string>
+    <string name="default_priority_sub">Для новых задач</string>
+    <string name="date_format">Формат даты</string>
+    <string name="date_format_sub">Как дата показывается в карточках</string>
+    <string name="date_style_short">5 ноя</string>
+    <string name="date_style_numeric">05.11.2026</string>
+    <string name="date_style_long">5 ноября</string>
     <string name="hide_done">Скрывать выполненные</string>
     <string name="hide_done_sub">Скрыть выполненные задачи</string>
     <string name="show_priorities">Отображать приоритеты</string>

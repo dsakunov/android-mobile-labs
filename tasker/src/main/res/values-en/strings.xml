@@ -41,6 +41,7 @@
 
     <string name="settings_title">Settings</string>
     <string name="section_general">GENERAL</string>
+    <string name="section_tasks">TASKS</string>
     <string name="section_data">DATA</string>
     <string name="section_about">ABOUT</string>
     <string name="language">Language</string>
@@ -55,6 +56,18 @@
     <string name="accent_teal">Teal</string>
     <string name="accent_blue">Blue</string>
     <string name="accent_orange">Orange</string>
+    <string name="sort">Sorting</string>
+    <string name="sort_date_asc">Date: nearest first</string>
+    <string name="sort_date_desc">Date: farthest first</string>
+    <string name="sort_priority_asc">Priority: low to high</string>
+    <string name="sort_priority_desc">Priority: high to low</string>
+    <string name="default_priority">Default priority</string>
+    <string name="default_priority_sub">For new tasks</string>
+    <string name="date_format">Date format</string>
+    <string name="date_format_sub">How the date is shown on cards</string>
+    <string name="date_style_short">5 Nov</string>
+    <string name="date_style_numeric">05.11.2026</string>
+    <string name="date_style_long">5 November</string>
     <string name="hide_done">Hide completed</string>
     <string name="hide_done_sub">Automatically hide completed tasks</string>
     <string name="show_priorities">Show priorities</string>

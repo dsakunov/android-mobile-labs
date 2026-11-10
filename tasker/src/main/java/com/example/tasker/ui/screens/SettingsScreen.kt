@@ -10,16 +10,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -40,9 +41,13 @@ import com.example.tasker.data.utils.setAppLanguage
 import com.example.tasker.domain.AccentColor
 import com.example.tasker.domain.AppLanguage
 import com.example.tasker.domain.AppSettings
+import com.example.tasker.domain.DateStyle
+import com.example.tasker.domain.Priority
+import com.example.tasker.domain.TaskSort
 import com.example.tasker.domain.ThemeMode
 import com.example.tasker.ui.components.AppSwitch
 import com.example.tasker.ui.components.BottomNavBar
+import com.example.tasker.ui.components.ChevronIcon
 import com.example.tasker.ui.components.ChoiceDialog
 import com.example.tasker.ui.components.ChoiceValue
 import com.example.tasker.ui.components.ConfirmDialog
@@ -54,7 +59,7 @@ import com.example.tasker.ui.components.SettingsCard
 import com.example.tasker.ui.theme.TaskerTheme
 import com.example.tasker.ui.theme.swatch
 
-private enum class SettingsDialog { LANGUAGE, THEME, ACCENT, REMOVE_DONE }
+private enum class SettingsDialog { LANGUAGE, THEME, ACCENT, SORT, PRIORITY, DATE_STYLE, REMOVE_DONE }
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier) {
@@ -121,6 +126,48 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
         )
     }
 
+    if (dialog == SettingsDialog.SORT) {
+        ChoiceDialog(
+            title = stringResource(R.string.sort),
+            options = TaskSort.entries,
+            selected = settings.sort,
+            label = { stringResource(it.labelRes) },
+            onSelect = {
+                dialog = null
+                SettingsRepository.setSort(it)
+            },
+            onDismiss = { dialog = null }
+        )
+    }
+
+    if (dialog == SettingsDialog.PRIORITY) {
+        ChoiceDialog(
+            title = stringResource(R.string.default_priority),
+            options = Priority.entries,
+            selected = settings.defaultPriority,
+            label = { stringResource(it.labelRes) },
+            onSelect = {
+                dialog = null
+                SettingsRepository.setDefaultPriority(it)
+            },
+            onDismiss = { dialog = null }
+        )
+    }
+
+    if (dialog == SettingsDialog.DATE_STYLE) {
+        ChoiceDialog(
+            title = stringResource(R.string.date_format),
+            options = DateStyle.entries,
+            selected = settings.dateStyle,
+            label = { stringResource(it.labelRes) },
+            onSelect = {
+                dialog = null
+                SettingsRepository.setDateStyle(it)
+            },
+            onDismiss = { dialog = null }
+        )
+    }
+
     if (dialog == SettingsDialog.REMOVE_DONE) {
         ConfirmDialog(
             title = stringResource(R.string.remove_done_title),
@@ -182,6 +229,31 @@ private fun SettingsContent(
                 subtitle = stringResource(R.string.accent_sub),
                 onClick = { onOpenDialog(SettingsDialog.ACCENT) }
             ) { ChoiceValue(stringResource(settings.accent.labelRes)) }
+        }
+
+        Spacer(Modifier.height(24.dp))
+        SectionLabel(stringResource(R.string.section_tasks))
+        SettingsCard {
+            SettingRow(
+                icon = Icons.Outlined.SwapVert,
+                title = stringResource(R.string.sort),
+                subtitle = stringResource(settings.sort.labelRes),
+                onClick = { onOpenDialog(SettingsDialog.SORT) }
+            ) { ChevronIcon() }
+            HorizontalDivider(color = colors.border)
+            SettingRow(
+                icon = Icons.Outlined.Flag,
+                title = stringResource(R.string.default_priority),
+                subtitle = stringResource(R.string.default_priority_sub),
+                onClick = { onOpenDialog(SettingsDialog.PRIORITY) }
+            ) { ChoiceValue(stringResource(settings.defaultPriority.labelRes)) }
+            HorizontalDivider(color = colors.border)
+            SettingRow(
+                icon = Icons.Outlined.CalendarMonth,
+                title = stringResource(R.string.date_format),
+                subtitle = stringResource(R.string.date_format_sub),
+                onClick = { onOpenDialog(SettingsDialog.DATE_STYLE) }
+            ) { ChoiceValue(stringResource(settings.dateStyle.labelRes)) }
             HorizontalDivider(color = colors.border)
             SettingRow(
                 icon = Icons.Outlined.VisibilityOff,
@@ -206,9 +278,7 @@ private fun SettingsContent(
                 title = stringResource(R.string.remove_done),
                 subtitle = stringResource(R.string.remove_done_sub, doneCount),
                 onClick = if (doneCount > 0) ({ onOpenDialog(SettingsDialog.REMOVE_DONE) }) else null
-            ) {
-                Icon(Icons.Outlined.ChevronRight, null, tint = colors.muted, modifier = Modifier.size(20.dp))
-            }
+            ) { ChevronIcon() }
         }
 
         Spacer(Modifier.height(24.dp))

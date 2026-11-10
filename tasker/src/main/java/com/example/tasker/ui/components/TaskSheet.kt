@@ -63,13 +63,14 @@ fun TaskSheet(
     initial: Task?,
     onDismiss: () -> Unit,
     onSave: (Task) -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    defaultPriority: Priority = Priority.MEDIUM
 ) {
     val colors = TaskerTheme.colors
     var title by remember { mutableStateOf(initial?.title ?: "") }
     var note by remember { mutableStateOf(initial?.note ?: "") }
     var date by remember { mutableStateOf(initial?.date ?: LocalDate.now()) }
-    var priority by remember { mutableStateOf(initial?.priority ?: Priority.MEDIUM) }
+    var priority by remember { mutableStateOf(initial?.priority ?: defaultPriority) }
     var showPicker by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
     val canSave = title.isNotBlank()

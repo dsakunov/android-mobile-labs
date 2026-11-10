@@ -32,7 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.tasker.data.utils.shortText
+import com.example.tasker.data.utils.styledText
+import com.example.tasker.domain.DateStyle
 import com.example.tasker.domain.Task
 import com.example.tasker.ui.theme.TaskerTheme
 import com.example.tasker.ui.theme.textColor
@@ -43,7 +44,8 @@ fun TaskCard(
     onToggle: () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    showPriority: Boolean = true
+    showPriority: Boolean = true,
+    dateStyle: DateStyle = DateStyle.SHORT
 ) {
     val colors = TaskerTheme.colors
     OutlinedCard(
@@ -85,7 +87,7 @@ fun TaskCard(
                 Text(
                     buildAnnotatedString {
                         withStyle(SpanStyle(color = colors.muted)) {
-                            append(task.date.shortText())
+                            append(task.date.styledText(dateStyle))
                             if (showPriority) append("  ·  ")
                         }
                         if (showPriority) {
@@ -123,6 +125,7 @@ private fun TaskCardPreview() {
             TaskCard(task = sampleTask, onToggle = {}, onClick = {})
             TaskCard(task = sampleTask.copy(done = true), onToggle = {}, onClick = {})
             TaskCard(task = sampleTask, onToggle = {}, onClick = {}, showPriority = false)
+            TaskCard(task = sampleTask, onToggle = {}, onClick = {}, dateStyle = DateStyle.NUMERIC)
         }
     }
 }

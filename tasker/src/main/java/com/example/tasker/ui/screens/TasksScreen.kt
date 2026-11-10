@@ -42,8 +42,10 @@ import com.example.tasker.R
 import com.example.tasker.data.repository.SettingsRepository
 import com.example.tasker.data.repository.TaskRepository
 import com.example.tasker.data.utils.rememberToday
+import com.example.tasker.domain.AppSettings
 import com.example.tasker.domain.Task
 import com.example.tasker.domain.TaskFilter
+import com.example.tasker.domain.comparator
 import com.example.tasker.domain.matches
 import com.example.tasker.domain.matchesQuery
 import com.example.tasker.ui.components.BottomNavBar
@@ -81,8 +83,7 @@ fun TasksScreen(modifier: Modifier = Modifier) {
         TasksContent(
             tasks = TaskRepository.tasks,
             loaded = TaskRepository.loaded,
-            hideCompleted = SettingsRepository.settings.hideCompleted,
-            showPriorities = SettingsRepository.settings.showPriorities,
+            settings = SettingsRepository.settings,
             onToggle = TaskRepository::toggle,
             onEdit = { editingId = it.id },
             modifier = Modifier.padding(innerPadding)
@@ -92,6 +93,7 @@ fun TasksScreen(modifier: Modifier = Modifier) {
     if (sheetOpen) {
         TaskSheet(
             initial = editing,
+            defaultPriority = SettingsRepository.settings.defaultPriority,
             onDismiss = { creating = false; editingId = null },
             onSave = {
                 TaskRepository.upsert(it)
@@ -109,8 +111,7 @@ fun TasksScreen(modifier: Modifier = Modifier) {
 private fun TasksContent(
     tasks: List<Task>,
     loaded: Boolean,
-    hideCompleted: Boolean,
-    showPriorities: Boolean,
+    settings: AppSettings,
     onToggle: (Task) -> Unit,
     onEdit: (Task) -> Unit,
     modifier: Modifier = Modifier
@@ -120,7 +121,9 @@ private fun TasksContent(
     var filter by rememberSaveable { mutableStateOf(TaskFilter.ALL) }
     var query by rememberSaveable { mutableStateOf("") }
 
-    val visible = tasks.filter { it.matches(filter, today, hideCompleted) && it.matchesQuery(query) }
+    val visible = tasks
+        .filter { it.matches(filter, today, settings.hideCompleted) && it.matchesQuery(query) }
+        .sortedWith(settings.sort.comparator())
 
     Column(modifier.fillMaxSize()) {
         ScreenHeader(
@@ -149,7 +152,7 @@ private fun TasksContent(
         ) {
             TaskFilter.entries.forEach { f ->
                 val name = stringResource(f.labelRes)
-                val count = tasks.count { it.matches(f, today, hideCompleted) }
+                val count = tasks.count { it.matches(f, today, settings.hideCompleted) }
                 FilterChip(
                     selected = filter == f,
                     onClick = { filter = f },
@@ -189,7 +192,8 @@ private fun TasksContent(
                         task = task,
                         onToggle = { onToggle(task) },
                         onClick = { onEdit(task) },
-                        showPriority = showPriorities
+                        showPriority = settings.showPriorities,
+                        dateStyle = settings.dateStyle
                     )
                 }
             }
@@ -208,8 +212,7 @@ private fun TasksContentPreview() {
         TasksContent(
             tasks = sampleTasks,
             loaded = true,
-            hideCompleted = false,
-            showPriorities = true,
+            settings = AppSettings(),
             onToggle = {},
             onEdit = {}
         )
