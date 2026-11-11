@@ -47,9 +47,13 @@ fun TaskCard(
     modifier: Modifier = Modifier,
     showPriority: Boolean = true,
     dateStyle: DateStyle = DateStyle.SHORT,
-    overdue: Boolean = false
+    overdue: Boolean = false,
+    compact: Boolean = false,
+    adaptiveHeight: Boolean = false
 ) {
     val colors = TaskerTheme.colors
+    val gap = if (compact) 8.dp else 12.dp
+    val spacing = if (compact) 0.dp else 2.dp
     OutlinedCard(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
@@ -58,7 +62,12 @@ fun TaskCard(
         ),
         border = BorderStroke(1.dp, if (overdue) colors.redText else colors.border)
     ) {
-        Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+        Column(
+            Modifier.padding(
+                horizontal = if (compact) 12.dp else 16.dp,
+                vertical = if (compact) 6.dp else 14.dp
+            )
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                     Checkbox(
@@ -70,7 +79,7 @@ fun TaskCard(
                         )
                     )
                 }
-                Spacer(Modifier.width(12.dp))
+                Spacer(Modifier.width(gap))
                 Text(
                     task.title,
                     modifier = Modifier.weight(1f),
@@ -84,7 +93,7 @@ fun TaskCard(
                 Icon(Icons.Outlined.ChevronRight, null, tint = colors.muted)
             }
             val hasNote = task.note.isNotBlank()
-            Column(Modifier.padding(start = 36.dp, top = 2.dp)) {
+            Column(Modifier.padding(start = 24.dp + gap, top = spacing)) {
                 if (hasNote) NoteLine(task.note)
                 Text(
                     buildAnnotatedString {
@@ -105,9 +114,9 @@ fun TaskCard(
                         }
                     },
                     fontSize = 12.sp,
-                    modifier = Modifier.padding(top = 2.dp)
+                    modifier = Modifier.padding(top = spacing)
                 )
-                if (!hasNote) NoteLine("")
+                if (!hasNote && !adaptiveHeight) NoteLine("")
             }
         }
     }
@@ -135,6 +144,8 @@ private fun TaskCardPreview() {
             TaskCard(task = sampleTask, onToggle = {}, onClick = {}, showPriority = false)
             TaskCard(task = sampleTask, onToggle = {}, onClick = {}, dateStyle = DateStyle.NUMERIC)
             TaskCard(task = sampleTask, onToggle = {}, onClick = {}, overdue = true)
+            TaskCard(task = sampleTask, onToggle = {}, onClick = {}, compact = true)
+            TaskCard(task = sampleTask.copy(note = ""), onToggle = {}, onClick = {}, adaptiveHeight = true)
         }
     }
 }

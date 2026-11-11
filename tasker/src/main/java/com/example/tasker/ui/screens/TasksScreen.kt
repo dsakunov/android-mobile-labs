@@ -224,7 +224,9 @@ private fun TasksContent(
                             onClick = { onEdit(task) },
                             showPriority = settings.showPriorities,
                             dateStyle = settings.dateStyle,
-                            overdue = settings.highlightOverdue && task.isOverdue(today)
+                            overdue = settings.highlightOverdue && task.isOverdue(today),
+                            compact = settings.compactCards,
+                            adaptiveHeight = settings.adaptiveCards
                         )
                     }
                 }

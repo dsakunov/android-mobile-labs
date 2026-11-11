@@ -15,11 +15,13 @@ import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.EventBusy
 import androidx.compose.material.icons.outlined.Flag
+import androidx.compose.material.icons.outlined.Height
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.SwapVert
+import androidx.compose.material.icons.outlined.ViewCompact
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
@@ -81,6 +83,8 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             onHideCompletedChange = SettingsRepository::setHideCompleted,
             onShowPrioritiesChange = SettingsRepository::setShowPriorities,
             onHighlightOverdueChange = SettingsRepository::setHighlightOverdue,
+            onCompactCardsChange = SettingsRepository::setCompactCards,
+            onAdaptiveCardsChange = SettingsRepository::setAdaptiveCards,
             modifier = Modifier.padding(innerPadding)
         )
     }
@@ -192,6 +196,8 @@ private fun SettingsContent(
     onHideCompletedChange: (Boolean) -> Unit,
     onShowPrioritiesChange: (Boolean) -> Unit,
     onHighlightOverdueChange: (Boolean) -> Unit,
+    onCompactCardsChange: (Boolean) -> Unit,
+    onAdaptiveCardsChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val colors = TaskerTheme.colors
@@ -278,6 +284,20 @@ private fun SettingsContent(
                 subtitle = stringResource(R.string.highlight_overdue_sub),
                 onClick = { onHighlightOverdueChange(!settings.highlightOverdue) }
             ) { AppSwitch(settings.highlightOverdue) }
+            HorizontalDivider(color = colors.border)
+            SettingRow(
+                icon = Icons.Outlined.ViewCompact,
+                title = stringResource(R.string.compact_cards),
+                subtitle = stringResource(R.string.compact_cards_sub),
+                onClick = { onCompactCardsChange(!settings.compactCards) }
+            ) { AppSwitch(settings.compactCards) }
+            HorizontalDivider(color = colors.border)
+            SettingRow(
+                icon = Icons.Outlined.Height,
+                title = stringResource(R.string.adaptive_cards),
+                subtitle = stringResource(R.string.adaptive_cards_sub),
+                onClick = { onAdaptiveCardsChange(!settings.adaptiveCards) }
+            ) { AppSwitch(settings.adaptiveCards) }
         }
 
         Spacer(Modifier.height(24.dp))
@@ -316,7 +336,9 @@ private fun SettingsContentPreview() {
             onOpenDialog = {},
             onHideCompletedChange = {},
             onShowPrioritiesChange = {},
-            onHighlightOverdueChange = {}
+            onHighlightOverdueChange = {},
+            onCompactCardsChange = {},
+            onAdaptiveCardsChange = {}
         )
     }
 }

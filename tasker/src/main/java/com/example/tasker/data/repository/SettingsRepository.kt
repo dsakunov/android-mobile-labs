@@ -35,6 +35,8 @@ object SettingsRepository {
     private val HIDE_COMPLETED = booleanPreferencesKey("hide_completed")
     private val SHOW_PRIORITIES = booleanPreferencesKey("show_priorities")
     private val HIGHLIGHT_OVERDUE = booleanPreferencesKey("highlight_overdue")
+    private val COMPACT_CARDS = booleanPreferencesKey("compact_cards")
+    private val ADAPTIVE_CARDS = booleanPreferencesKey("adaptive_cards")
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var appContext: Context
@@ -59,7 +61,9 @@ object SettingsRepository {
         dateStyle = enumOf(DATE_STYLE, DateStyle.SHORT),
         hideCompleted = this[HIDE_COMPLETED] ?: false,
         showPriorities = this[SHOW_PRIORITIES] ?: true,
-        highlightOverdue = this[HIGHLIGHT_OVERDUE] ?: true
+        highlightOverdue = this[HIGHLIGHT_OVERDUE] ?: true,
+        compactCards = this[COMPACT_CARDS] ?: false,
+        adaptiveCards = this[ADAPTIVE_CARDS] ?: false
     )
 
     fun setThemeMode(value: ThemeMode) = save { it[THEME_MODE] = value.name }
@@ -77,6 +81,10 @@ object SettingsRepository {
     fun setShowPriorities(value: Boolean) = save { it[SHOW_PRIORITIES] = value }
 
     fun setHighlightOverdue(value: Boolean) = save { it[HIGHLIGHT_OVERDUE] = value }
+
+    fun setCompactCards(value: Boolean) = save { it[COMPACT_CARDS] = value }
+
+    fun setAdaptiveCards(value: Boolean) = save { it[ADAPTIVE_CARDS] = value }
 
     private inline fun <reified T : Enum<T>> Preferences.enumOf(key: Preferences.Key<String>, default: T): T =
         enumValues<T>().firstOrNull { it.name == this[key] } ?: default

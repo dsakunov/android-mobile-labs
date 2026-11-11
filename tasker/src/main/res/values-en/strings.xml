@@ -79,6 +79,10 @@
     <string name="show_priorities_sub">Show priority statuses</string>
     <string name="highlight_overdue">Overdue tasks</string>
     <string name="highlight_overdue_sub">Mark in red and show a filter</string>
+    <string name="compact_cards">Compact cards</string>
+    <string name="compact_cards_sub">Less spacing inside the card</string>
+    <string name="adaptive_cards">Adaptive card height</string>
+    <string name="adaptive_cards_sub">No empty space when there is no note</string>
     <string name="remove_done">Remove completed</string>
     <string name="remove_done_sub">Clear all finished tasks · %1$d</string>
     <string name="remove_done_title">Delete completed tasks?</string>

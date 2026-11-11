@@ -8,5 +8,7 @@ data class AppSettings(
     val dateStyle: DateStyle = DateStyle.SHORT,
     val hideCompleted: Boolean = false,
     val showPriorities: Boolean = true,
-    val highlightOverdue: Boolean = true
+    val highlightOverdue: Boolean = true,
+    val compactCards: Boolean = false,
+    val adaptiveCards: Boolean = false
 )

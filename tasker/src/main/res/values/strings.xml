@@ -84,6 +84,10 @@
     <string name="show_priorities_sub">Показывать статусы приоритетов</string>
     <string name="highlight_overdue">Просроченные задачи</string>
     <string name="highlight_overdue_sub">Отмечать красным и показывать фильтр</string>
+    <string name="compact_cards">Компактные карточки</string>
+    <string name="compact_cards_sub">Меньше отступов внутри карточки</string>
+    <string name="adaptive_cards">Адаптивная высота карточек</string>
+    <string name="adaptive_cards_sub">Без пустого места, если нет заметки</string>
     <string name="remove_done">Удалить выполненные</string>
     <string name="remove_done_sub">Очистить завершённые задачи · %1$d</string>
     <string name="remove_done_title">Удалить выполненные задачи?</string>
