@@ -42,6 +42,8 @@
     <string name="scheduled">Запланировано</string>
     <string name="tasks_count">Задач: %1$d</string>
     <string name="done_count">%1$d/%2$d выполнено</string>
+    <string name="prev_week">Предыдущая неделя</string>
+    <string name="next_week">Следующая неделя</string>
     <string name="no_tasks_day">На этот день задач нет</string>
 
     <string name="settings_label" translatable="false">TASKER</string>

@@ -40,6 +40,8 @@
     <string name="scheduled">Scheduled</string>
     <string name="tasks_count">Tasks: %1$d</string>
     <string name="done_count">%1$d/%2$d completed</string>
+    <string name="prev_week">Previous week</string>
+    <string name="next_week">Next week</string>
     <string name="no_tasks_day">No tasks for this day</string>
 
     <string name="settings_title">Settings</string>

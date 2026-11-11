@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,6 +34,7 @@ import com.example.tasker.data.repository.TaskRepository
 import com.example.tasker.data.utils.fullDayText
 import com.example.tasker.data.utils.monthYearCaps
 import com.example.tasker.data.utils.rememberToday
+import com.example.tasker.data.utils.shortText
 import com.example.tasker.domain.AppSettings
 import com.example.tasker.domain.Task
 import com.example.tasker.domain.comparator
@@ -48,6 +48,7 @@ import com.example.tasker.ui.components.ScreenHeader
 import com.example.tasker.ui.components.SwipeTaskCard
 import com.example.tasker.ui.components.TaskCard
 import com.example.tasker.ui.components.TaskSheet
+import com.example.tasker.ui.components.WeekNavigator
 import com.example.tasker.ui.components.sampleTasks
 import com.example.tasker.ui.theme.TaskerTheme
 import java.time.LocalDate
@@ -109,9 +110,10 @@ private fun PlanContent(
 ) {
     val colors = TaskerTheme.colors
     val today = rememberToday()
-    val week = remember(today) { (0L..6L).map { today.plusDays(it) } }
     var selectedEpoch by rememberSaveable { mutableStateOf(today.toEpochDay()) }
     val selected = LocalDate.ofEpochDay(selectedEpoch)
+    val weekStart = selected.minusDays(selected.dayOfWeek.value - 1L)
+    val week = (0L..6L).map { weekStart.plusDays(it) }
 
     val dayTasks = tasks.filter { it.date == selected }
     val shownTasks = dayTasks
@@ -127,7 +129,15 @@ private fun PlanContent(
             today = today
         )
 
-        Spacer(Modifier.height(22.dp))
+        Spacer(Modifier.height(14.dp))
+
+        WeekNavigator(
+            range = "${week.first().shortText()} – ${week.last().shortText()}",
+            showToday = today !in week,
+            onPrevious = { selectedEpoch -= 7 },
+            onNext = { selectedEpoch += 7 },
+            onToday = { selectedEpoch = today.toEpochDay() }
+        )
 
         Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp)) {
             week.forEach { day ->
