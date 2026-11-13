@@ -6,63 +6,184 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.EventBusy
+import androidx.compose.material.icons.outlined.Flag
+import androidx.compose.material.icons.outlined.Height
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.LocalOffer
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.SwapVert
+import androidx.compose.material.icons.outlined.ViewCompact
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.tasker.R
 import com.example.tasker.data.repository.SettingsRepository
 import com.example.tasker.data.repository.TaskRepository
 import com.example.tasker.data.utils.rememberToday
+import com.example.tasker.data.utils.setAppLanguage
+import com.example.tasker.domain.AccentColor
+import com.example.tasker.domain.AppLanguage
 import com.example.tasker.domain.AppSettings
+import com.example.tasker.domain.DateStyle
+import com.example.tasker.domain.Priority
+import com.example.tasker.domain.TaskSort
+import com.example.tasker.domain.ThemeMode
 import com.example.tasker.ui.components.AppSwitch
 import com.example.tasker.ui.components.BottomNavBar
+import com.example.tasker.ui.components.ChevronIcon
+import com.example.tasker.ui.components.ChoiceDialog
+import com.example.tasker.ui.components.ChoiceValue
+import com.example.tasker.ui.components.ConfirmDialog
 import com.example.tasker.ui.components.PreviewWrapper
 import com.example.tasker.ui.components.ScreenHeader
 import com.example.tasker.ui.components.SectionLabel
 import com.example.tasker.ui.components.SettingRow
 import com.example.tasker.ui.components.SettingsCard
-import com.example.tasker.ui.theme.Bg
-import com.example.tasker.ui.theme.Border
-import com.example.tasker.ui.theme.Muted
+import com.example.tasker.ui.theme.TaskerTheme
+import com.example.tasker.ui.theme.swatch
+
+private enum class SettingsDialog { LANGUAGE, THEME, ACCENT, SORT, PRIORITY, DATE_STYLE, REMOVE_DONE }
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier) {
-    val settings by remember { SettingsRepository.flow() }.collectAsState(initial = AppSettings())
+    val settings = SettingsRepository.settings
     val doneCount = TaskRepository.tasks.count { it.done }
+    val context = LocalContext.current
+    var dialog by rememberSaveable { mutableStateOf<SettingsDialog?>(null) }
 
     Scaffold(
         modifier = modifier,
-        containerColor = Bg,
+        containerColor = TaskerTheme.colors.bg,
         bottomBar = { BottomNavBar(selected = 2) }
     ) { innerPadding ->
         SettingsContent(
             settings = settings,
             doneCount = doneCount,
-            onDarkThemeChange = SettingsRepository::setDarkTheme,
+            onOpenDialog = { dialog = it },
             onHideCompletedChange = SettingsRepository::setHideCompleted,
             onShowPrioritiesChange = SettingsRepository::setShowPriorities,
+            onHighlightOverdueChange = SettingsRepository::setHighlightOverdue,
+            onCompactCardsChange = SettingsRepository::setCompactCards,
+            onAdaptiveCardsChange = SettingsRepository::setAdaptiveCards,
             modifier = Modifier.padding(innerPadding)
+        )
+    }
+
+    if (dialog == SettingsDialog.LANGUAGE) {
+        ChoiceDialog(
+            title = stringResource(R.string.language),
+            options = AppLanguage.entries,
+            selected = AppLanguage.current(),
+            label = { stringResource(it.nameRes) },
+            onSelect = { language ->
+                dialog = null
+                context.setAppLanguage(language.tag)
+            },
+            onDismiss = { dialog = null }
+        )
+    }
+
+    if (dialog == SettingsDialog.THEME) {
+        ChoiceDialog(
+            title = stringResource(R.string.theme),
+            options = ThemeMode.entries,
+            selected = settings.themeMode,
+            label = { stringResource(it.labelRes) },
+            onSelect = {
+                dialog = null
+                SettingsRepository.setThemeMode(it)
+            },
+            onDismiss = { dialog = null }
+        )
+    }
+
+    if (dialog == SettingsDialog.ACCENT) {
+        ChoiceDialog(
+            title = stringResource(R.string.accent),
+            options = AccentColor.entries,
+            selected = settings.accent,
+            label = { stringResource(it.labelRes) },
+            onSelect = {
+                dialog = null
+                SettingsRepository.setAccent(it)
+            },
+            onDismiss = { dialog = null },
+            leading = { Surface(Modifier.size(20.dp), shape = CircleShape, color = it.swatch()) {} }
+        )
+    }
+
+    if (dialog == SettingsDialog.SORT) {
+        ChoiceDialog(
+            title = stringResource(R.string.sort),
+            options = TaskSort.entries,
+            selected = settings.sort,
+            label = { stringResource(it.labelRes) },
+            onSelect = {
+                dialog = null
+                SettingsRepository.setSort(it)
+            },
+            onDismiss = { dialog = null }
+        )
+    }
+
+    if (dialog == SettingsDialog.PRIORITY) {
+        ChoiceDialog(
+            title = stringResource(R.string.default_priority),
+            options = Priority.entries,
+            selected = settings.defaultPriority,
+            label = { stringResource(it.labelRes) },
+            onSelect = {
+                dialog = null
+                SettingsRepository.setDefaultPriority(it)
+            },
+            onDismiss = { dialog = null }
+        )
+    }
+
+    if (dialog == SettingsDialog.DATE_STYLE) {
+        ChoiceDialog(
+            title = stringResource(R.string.date_format),
+            options = DateStyle.entries,
+            selected = settings.dateStyle,
+            label = { stringResource(it.labelRes) },
+            onSelect = {
+                dialog = null
+                SettingsRepository.setDateStyle(it)
+            },
+            onDismiss = { dialog = null }
+        )
+    }
+
+    if (dialog == SettingsDialog.REMOVE_DONE) {
+        ConfirmDialog(
+            title = stringResource(R.string.remove_done_title),
+            text = stringResource(R.string.remove_done_text, doneCount),
+            confirmText = stringResource(R.string.delete),
+            onConfirm = {
+                TaskRepository.deleteDone()
+                dialog = null
+            },
+            onDismiss = { dialog = null }
         )
     }
 }
@@ -71,11 +192,15 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
 private fun SettingsContent(
     settings: AppSettings,
     doneCount: Int,
-    onDarkThemeChange: (Boolean) -> Unit,
+    onOpenDialog: (SettingsDialog) -> Unit,
     onHideCompletedChange: (Boolean) -> Unit,
     onShowPrioritiesChange: (Boolean) -> Unit,
+    onHighlightOverdueChange: (Boolean) -> Unit,
+    onCompactCardsChange: (Boolean) -> Unit,
+    onAdaptiveCardsChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = TaskerTheme.colors
     val today = rememberToday()
 
     Column(
@@ -97,33 +222,82 @@ private fun SettingsContent(
                 icon = Icons.Outlined.Language,
                 title = stringResource(R.string.language),
                 subtitle = stringResource(R.string.language_sub),
-                onClick = { }
-            ) {
-                Text(stringResource(R.string.language_current), color = Muted, fontSize = 13.sp)
-                Spacer(Modifier.width(4.dp))
-                Icon(Icons.Outlined.ChevronRight, null, tint = Muted, modifier = Modifier.size(20.dp))
-            }
-            HorizontalDivider(color = Border)
+                onClick = { onOpenDialog(SettingsDialog.LANGUAGE) }
+            ) { ChoiceValue(stringResource(AppLanguage.current().nameRes)) }
+            HorizontalDivider(color = colors.border)
             SettingRow(
                 icon = Icons.Outlined.DarkMode,
-                title = stringResource(R.string.dark_theme),
-                subtitle = stringResource(R.string.dark_theme_sub),
-                onClick = { onDarkThemeChange(!settings.darkTheme) }
-            ) { AppSwitch(settings.darkTheme) }
-            HorizontalDivider(color = Border)
+                title = stringResource(R.string.theme),
+                subtitle = stringResource(R.string.theme_sub),
+                onClick = { onOpenDialog(SettingsDialog.THEME) }
+            ) { ChoiceValue(stringResource(settings.themeMode.labelRes)) }
+            HorizontalDivider(color = colors.border)
+            SettingRow(
+                icon = Icons.Outlined.Palette,
+                title = stringResource(R.string.accent),
+                subtitle = stringResource(R.string.accent_sub),
+                onClick = { onOpenDialog(SettingsDialog.ACCENT) }
+            ) { ChoiceValue(stringResource(settings.accent.labelRes)) }
+        }
+
+        Spacer(Modifier.height(24.dp))
+        SectionLabel(stringResource(R.string.section_tasks))
+        SettingsCard {
+            SettingRow(
+                icon = Icons.Outlined.SwapVert,
+                title = stringResource(R.string.sort),
+                subtitle = stringResource(settings.sort.labelRes),
+                onClick = { onOpenDialog(SettingsDialog.SORT) }
+            ) { ChevronIcon() }
+            HorizontalDivider(color = colors.border)
+            SettingRow(
+                icon = Icons.Outlined.Flag,
+                title = stringResource(R.string.default_priority),
+                subtitle = stringResource(R.string.default_priority_sub),
+                onClick = { onOpenDialog(SettingsDialog.PRIORITY) }
+            ) { ChoiceValue(stringResource(settings.defaultPriority.labelRes)) }
+            HorizontalDivider(color = colors.border)
+            SettingRow(
+                icon = Icons.Outlined.CalendarMonth,
+                title = stringResource(R.string.date_format),
+                subtitle = stringResource(R.string.date_format_sub),
+                onClick = { onOpenDialog(SettingsDialog.DATE_STYLE) }
+            ) { ChoiceValue(stringResource(settings.dateStyle.labelRes)) }
+            HorizontalDivider(color = colors.border)
             SettingRow(
                 icon = Icons.Outlined.VisibilityOff,
                 title = stringResource(R.string.hide_done),
                 subtitle = stringResource(R.string.hide_done_sub),
                 onClick = { onHideCompletedChange(!settings.hideCompleted) }
             ) { AppSwitch(settings.hideCompleted) }
-            HorizontalDivider(color = Border)
+            HorizontalDivider(color = colors.border)
             SettingRow(
                 icon = Icons.Outlined.LocalOffer,
                 title = stringResource(R.string.show_priorities),
                 subtitle = stringResource(R.string.show_priorities_sub),
                 onClick = { onShowPrioritiesChange(!settings.showPriorities) }
             ) { AppSwitch(settings.showPriorities) }
+            HorizontalDivider(color = colors.border)
+            SettingRow(
+                icon = Icons.Outlined.EventBusy,
+                title = stringResource(R.string.highlight_overdue),
+                subtitle = stringResource(R.string.highlight_overdue_sub),
+                onClick = { onHighlightOverdueChange(!settings.highlightOverdue) }
+            ) { AppSwitch(settings.highlightOverdue) }
+            HorizontalDivider(color = colors.border)
+            SettingRow(
+                icon = Icons.Outlined.ViewCompact,
+                title = stringResource(R.string.compact_cards),
+                subtitle = stringResource(R.string.compact_cards_sub),
+                onClick = { onCompactCardsChange(!settings.compactCards) }
+            ) { AppSwitch(settings.compactCards) }
+            HorizontalDivider(color = colors.border)
+            SettingRow(
+                icon = Icons.Outlined.Height,
+                title = stringResource(R.string.adaptive_cards),
+                subtitle = stringResource(R.string.adaptive_cards_sub),
+                onClick = { onAdaptiveCardsChange(!settings.adaptiveCards) }
+            ) { AppSwitch(settings.adaptiveCards) }
         }
 
         Spacer(Modifier.height(24.dp))
@@ -133,10 +307,8 @@ private fun SettingsContent(
                 icon = Icons.Outlined.DeleteOutline,
                 title = stringResource(R.string.remove_done),
                 subtitle = stringResource(R.string.remove_done_sub, doneCount),
-                onClick = { }
-            ) {
-                Icon(Icons.Outlined.ChevronRight, null, tint = Muted, modifier = Modifier.size(20.dp))
-            }
+                onClick = if (doneCount > 0) ({ onOpenDialog(SettingsDialog.REMOVE_DONE) }) else null
+            ) { ChevronIcon() }
         }
 
         Spacer(Modifier.height(24.dp))
@@ -161,9 +333,12 @@ private fun SettingsContentPreview() {
         SettingsContent(
             settings = AppSettings(),
             doneCount = 1,
-            onDarkThemeChange = {},
+            onOpenDialog = {},
             onHideCompletedChange = {},
-            onShowPrioritiesChange = {}
+            onShowPrioritiesChange = {},
+            onHighlightOverdueChange = {},
+            onCompactCardsChange = {},
+            onAdaptiveCardsChange = {}
         )
     }
 }

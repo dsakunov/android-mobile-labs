@@ -10,3 +10,5 @@ data class Task(
     val priority: Priority,
     val done: Boolean = false
 )
+
+fun Task.isOverdue(today: LocalDate): Boolean = !done && date.isBefore(today)

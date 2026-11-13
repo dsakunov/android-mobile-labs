@@ -63,4 +63,8 @@ object TaskRepository {
     fun delete(id: Long) {
         scope.launch { dao.deleteById(id) }
     }
+
+    fun deleteDone() {
+        scope.launch { dao.deleteDone() }
+    }
 }

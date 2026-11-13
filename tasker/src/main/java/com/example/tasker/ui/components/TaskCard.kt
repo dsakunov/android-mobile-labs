@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -33,13 +32,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.tasker.data.utils.shortText
+import com.example.tasker.R
+import com.example.tasker.data.utils.styledText
+import com.example.tasker.domain.DateStyle
 import com.example.tasker.domain.Task
-import com.example.tasker.ui.theme.Border
-import com.example.tasker.ui.theme.CheckOff
-import com.example.tasker.ui.theme.CheckOn
-import com.example.tasker.ui.theme.Ink
-import com.example.tasker.ui.theme.Muted
+import com.example.tasker.ui.theme.TaskerTheme
 import com.example.tasker.ui.theme.textColor
 
 @Composable
@@ -47,52 +44,79 @@ fun TaskCard(
     task: Task,
     onToggle: () -> Unit,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showPriority: Boolean = true,
+    dateStyle: DateStyle = DateStyle.SHORT,
+    overdue: Boolean = false,
+    compact: Boolean = false,
+    adaptiveHeight: Boolean = false
 ) {
+    val colors = TaskerTheme.colors
+    val gap = if (compact) 8.dp else 12.dp
+    val spacing = if (compact) 0.dp else 2.dp
     OutlinedCard(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.outlinedCardColors(
-            containerColor = if (task.done) Color(0xFFFAFCFB) else Color.White
+            containerColor = if (task.done) colors.surfaceDone else colors.surface
         ),
-        border = BorderStroke(1.dp, Border)
+        border = BorderStroke(1.dp, if (overdue) colors.redText else colors.border)
     ) {
-        Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+        Column(
+            Modifier.padding(
+                horizontal = if (compact) 12.dp else 16.dp,
+                vertical = if (compact) 6.dp else 14.dp
+            )
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                     Checkbox(
                         checked = task.done,
                         onCheckedChange = { onToggle() },
-                        colors = CheckboxDefaults.colors(checkedColor = CheckOn, uncheckedColor = CheckOff)
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = colors.checkOn,
+                            uncheckedColor = colors.checkOff
+                        )
                     )
                 }
-                Spacer(Modifier.width(12.dp))
+                Spacer(Modifier.width(gap))
                 Text(
                     task.title,
                     modifier = Modifier.weight(1f),
-                    color = if (task.done) Muted else Ink,
+                    color = if (task.done) colors.muted else colors.ink,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     textDecoration = if (task.done) TextDecoration.LineThrough else null,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Icon(Icons.Outlined.ChevronRight, null, tint = Muted)
+                Icon(Icons.Outlined.ChevronRight, null, tint = colors.muted)
             }
             val hasNote = task.note.isNotBlank()
-            Column(Modifier.padding(start = 36.dp, top = 2.dp)) {
+            Column(Modifier.padding(start = 24.dp + gap, top = spacing)) {
                 if (hasNote) NoteLine(task.note)
                 Text(
                     buildAnnotatedString {
-                        withStyle(SpanStyle(color = Muted)) { append("${task.date.shortText()}  ·  ") }
-                        withStyle(SpanStyle(color = task.priority.textColor(), fontWeight = FontWeight.Bold)) {
-                            append(stringResource(task.priority.labelRes))
+                        withStyle(SpanStyle(color = colors.muted)) {
+                            append(task.date.styledText(dateStyle))
+                            if (overdue || showPriority) append("  ·  ")
+                        }
+                        if (overdue) {
+                            withStyle(SpanStyle(color = colors.redText, fontWeight = FontWeight.Bold)) {
+                                append(stringResource(R.string.overdue))
+                                if (showPriority) append("  ·  ")
+                            }
+                        }
+                        if (showPriority) {
+                            withStyle(SpanStyle(color = task.priority.textColor(), fontWeight = FontWeight.Bold)) {
+                                append(stringResource(task.priority.labelRes))
+                            }
                         }
                     },
                     fontSize = 12.sp,
-                    modifier = Modifier.padding(top = 2.dp)
+                    modifier = Modifier.padding(top = spacing)
                 )
-                if (!hasNote) NoteLine("")
+                if (!hasNote && !adaptiveHeight) NoteLine("")
             }
         }
     }
@@ -102,7 +126,7 @@ fun TaskCard(
 private fun NoteLine(text: String) {
     Text(
         text,
-        color = Muted,
+        color = TaskerTheme.colors.muted,
         fontSize = 13.sp,
         minLines = 1,
         maxLines = 1,
@@ -117,6 +141,11 @@ private fun TaskCardPreview() {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             TaskCard(task = sampleTask, onToggle = {}, onClick = {})
             TaskCard(task = sampleTask.copy(done = true), onToggle = {}, onClick = {})
+            TaskCard(task = sampleTask, onToggle = {}, onClick = {}, showPriority = false)
+            TaskCard(task = sampleTask, onToggle = {}, onClick = {}, dateStyle = DateStyle.NUMERIC)
+            TaskCard(task = sampleTask, onToggle = {}, onClick = {}, overdue = true)
+            TaskCard(task = sampleTask, onToggle = {}, onClick = {}, compact = true)
+            TaskCard(task = sampleTask.copy(note = ""), onToggle = {}, onClick = {}, adaptiveHeight = true)
         }
     }
 }

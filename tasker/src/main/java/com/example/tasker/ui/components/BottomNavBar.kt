@@ -27,9 +27,7 @@ import com.example.tasker.MainActivity
 import com.example.tasker.PlanActivity
 import com.example.tasker.R
 import com.example.tasker.SettingsActivity
-import com.example.tasker.ui.theme.Muted
-import com.example.tasker.ui.theme.TealDark
-import com.example.tasker.ui.theme.TealSoft
+import com.example.tasker.ui.theme.TaskerTheme
 
 private data class NavItem(@StringRes val labelRes: Int, val icon: ImageVector)
 
@@ -41,9 +39,10 @@ private val navItems = listOf(
 
 @Composable
 fun BottomNavBar(selected: Int, modifier: Modifier = Modifier) {
+    val colors = TaskerTheme.colors
     val context = LocalContext.current
 
-    Surface(modifier = modifier, color = Color.White) {
+    Surface(modifier = modifier, color = colors.surface) {
         NavigationBar(
             modifier = Modifier.padding(horizontal = 20.dp),
             containerColor = Color.Transparent
@@ -55,11 +54,11 @@ fun BottomNavBar(selected: Int, modifier: Modifier = Modifier) {
                     icon = { Icon(item.icon, null) },
                     label = { Text(stringResource(item.labelRes)) },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = TealDark,
-                        selectedTextColor = TealDark,
-                        indicatorColor = TealSoft,
-                        unselectedIconColor = Muted,
-                        unselectedTextColor = Muted
+                        selectedIconColor = colors.accentDark,
+                        selectedTextColor = colors.accentDark,
+                        indicatorColor = colors.accentSoft,
+                        unselectedIconColor = colors.muted,
+                        unselectedTextColor = colors.muted
                     )
                 )
             }

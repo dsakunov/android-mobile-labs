@@ -9,22 +9,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.tasker.ui.theme.SwitchOff
-import com.example.tasker.ui.theme.Teal
+import com.example.tasker.ui.theme.TaskerTheme
 
 @Composable
 fun AppSwitch(checked: Boolean, modifier: Modifier = Modifier) {
+    val colors = TaskerTheme.colors
     Switch(
         checked = checked,
         onCheckedChange = null,
         modifier = modifier,
         colors = SwitchDefaults.colors(
-            checkedTrackColor = Teal,
+            checkedTrackColor = colors.accent,
             checkedThumbColor = Color.White,
-            checkedBorderColor = Teal,
-            uncheckedTrackColor = SwitchOff,
+            checkedBorderColor = colors.accent,
+            uncheckedTrackColor = colors.switchOff,
             uncheckedThumbColor = Color.White,
-            uncheckedBorderColor = SwitchOff
+            uncheckedBorderColor = colors.switchOff
         )
     )
 }

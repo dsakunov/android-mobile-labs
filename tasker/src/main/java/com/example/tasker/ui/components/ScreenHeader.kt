@@ -16,16 +16,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tasker.data.utils.capsMonth
-import com.example.tasker.ui.theme.Border
-import com.example.tasker.ui.theme.Ink
-import com.example.tasker.ui.theme.Muted
-import com.example.tasker.ui.theme.Teal
+import com.example.tasker.ui.theme.TaskerTheme
 import java.time.LocalDate
 
 @Composable
@@ -35,6 +31,7 @@ fun ScreenHeader(
     today: LocalDate,
     modifier: Modifier = Modifier
 ) {
+    val colors = TaskerTheme.colors
     Row(
         modifier.fillMaxWidth().padding(start = 22.dp, end = 18.dp, top = 22.dp),
         verticalAlignment = Alignment.Top
@@ -42,24 +39,29 @@ fun ScreenHeader(
         Column(Modifier.weight(1f)) {
             Text(
                 label,
-                color = Teal, fontSize = 12.sp, fontWeight = FontWeight.Bold,
+                color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.Bold,
                 letterSpacing = 1.2.sp
             )
             Spacer(Modifier.height(4.dp))
-            Text(title, color = Ink, fontSize = 32.sp, fontWeight = FontWeight.ExtraBold)
+            Text(title, color = colors.ink, fontSize = 32.sp, fontWeight = FontWeight.ExtraBold)
         }
         OutlinedCard(
             modifier = Modifier.size(60.dp),
-            colors = CardDefaults.outlinedCardColors(containerColor = Color.White),
-            border = BorderStroke(1.dp, Border)
+            colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
+            border = BorderStroke(1.dp, colors.border)
         ) {
             Column(
                 Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(today.dayOfMonth.toString(), color = Ink, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
-                Text(today.capsMonth(), color = Muted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    today.dayOfMonth.toString(),
+                    color = colors.ink,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Text(today.capsMonth(), color = colors.muted, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }

@@ -1,6 +1,6 @@
 package com.example.tasker.ui.screens
 
-import androidx.annotation.StringRes
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Search
@@ -40,43 +41,47 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tasker.R
+import com.example.tasker.data.repository.SettingsRepository
 import com.example.tasker.data.repository.TaskRepository
 import com.example.tasker.data.utils.rememberToday
+import com.example.tasker.domain.AppSettings
 import com.example.tasker.domain.Task
+import com.example.tasker.domain.TaskFilter
+import com.example.tasker.domain.comparator
+import com.example.tasker.domain.isOverdue
+import com.example.tasker.domain.matches
+import com.example.tasker.domain.matchesQuery
 import com.example.tasker.ui.components.BottomNavBar
+import com.example.tasker.ui.components.DeleteTaskDialog
 import com.example.tasker.ui.components.PreviewWrapper
 import com.example.tasker.ui.components.ScreenHeader
+import com.example.tasker.ui.components.SwipeTaskCard
 import com.example.tasker.ui.components.TaskCard
 import com.example.tasker.ui.components.TaskSheet
 import com.example.tasker.ui.components.fieldColors
 import com.example.tasker.ui.components.sampleTasks
-import com.example.tasker.ui.theme.Bg
-import com.example.tasker.ui.theme.Border
-import com.example.tasker.ui.theme.Muted
-import com.example.tasker.ui.theme.Teal
-import com.example.tasker.ui.theme.TealDark
-import com.example.tasker.ui.theme.TealSoft
-
-private enum class Filter(@StringRes val labelRes: Int) {
-    ALL(R.string.filter_all), TODAY(R.string.filter_today), DONE(R.string.filter_done)
-}
+import com.example.tasker.ui.theme.TaskerTheme
 
 @Composable
 fun TasksScreen(modifier: Modifier = Modifier) {
+    val colors = TaskerTheme.colors
     var editingId by rememberSaveable { mutableStateOf<Long?>(null) }
     var creating by rememberSaveable { mutableStateOf(false) }
 
+    var deletingId by rememberSaveable { mutableStateOf<Long?>(null) }
+
     val editing = TaskRepository.tasks.firstOrNull { it.id == editingId }
+    val deleting = TaskRepository.tasks.firstOrNull { it.id == deletingId }
     val sheetOpen = creating || editing != null
 
     Scaffold(
         modifier = modifier,
-        containerColor = Bg,
+        containerColor = colors.bg,
         bottomBar = { BottomNavBar(selected = 0) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { creating = true },
-                containerColor = Teal,
+                containerColor = colors.accent,
                 contentColor = Color.White
             ) {
                 Icon(Icons.Filled.Add, stringResource(R.string.add_task))
@@ -86,15 +91,29 @@ fun TasksScreen(modifier: Modifier = Modifier) {
         TasksContent(
             tasks = TaskRepository.tasks,
             loaded = TaskRepository.loaded,
+            settings = SettingsRepository.settings,
             onToggle = TaskRepository::toggle,
             onEdit = { editingId = it.id },
+            onDelete = { deletingId = it.id },
             modifier = Modifier.padding(innerPadding)
+        )
+    }
+
+    if (deleting != null) {
+        DeleteTaskDialog(
+            task = deleting,
+            onConfirm = {
+                TaskRepository.delete(deleting.id)
+                deletingId = null
+            },
+            onDismiss = { deletingId = null }
         )
     }
 
     if (sheetOpen) {
         TaskSheet(
             initial = editing,
+            defaultPriority = SettingsRepository.settings.defaultPriority,
             onDismiss = { creating = false; editingId = null },
             onSave = {
                 TaskRepository.upsert(it)
@@ -112,25 +131,23 @@ fun TasksScreen(modifier: Modifier = Modifier) {
 private fun TasksContent(
     tasks: List<Task>,
     loaded: Boolean,
+    settings: AppSettings,
     onToggle: (Task) -> Unit,
     onEdit: (Task) -> Unit,
+    onDelete: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = TaskerTheme.colors
     val today = rememberToday()
-    var filter by rememberSaveable { mutableStateOf(Filter.ALL) }
+    var filter by rememberSaveable { mutableStateOf(TaskFilter.ALL) }
     var query by rememberSaveable { mutableStateOf("") }
 
-    fun matches(t: Task, f: Filter) = when (f) {
-        Filter.ALL -> true
-        Filter.TODAY -> t.date == today
-        Filter.DONE -> t.done
-    }
+    val filters = TaskFilter.entries.filter { it != TaskFilter.OVERDUE || settings.highlightOverdue }
+    val activeFilter = filter.takeIf { it in filters } ?: TaskFilter.ALL
 
-    val visible = tasks.filter {
-        matches(it, filter) && (query.isBlank() ||
-                it.title.contains(query.trim(), ignoreCase = true) ||
-                it.note.contains(query.trim(), ignoreCase = true))
-    }
+    val visible = tasks
+        .filter { it.matches(activeFilter, today, settings.hideCompleted) && it.matchesQuery(query) }
+        .sortedWith(settings.sort.comparator())
 
     Column(modifier.fillMaxSize()) {
         ScreenHeader(
@@ -148,25 +165,26 @@ private fun TasksContent(
             placeholder = { Text(stringResource(R.string.search_hint)) },
             leadingIcon = { Icon(Icons.Outlined.Search, null) },
             singleLine = true,
-            colors = fieldColors(containerColor = Color.White)
+            colors = fieldColors(containerColor = colors.surface)
         )
 
         Spacer(Modifier.height(12.dp))
 
         Row(
-            Modifier.padding(horizontal = 22.dp),
+            Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 22.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Filter.entries.forEach { f ->
+            filters.forEach { f ->
                 val name = stringResource(f.labelRes)
-                val count = tasks.count { matches(it, f) }
+                val count = tasks.count { it.matches(f, today, settings.hideCompleted) }
                 FilterChip(
-                    selected = filter == f,
+                    selected = activeFilter == f,
                     onClick = { filter = f },
                     label = {
                         Text(
                             buildAnnotatedString {
-                                withStyle(SpanStyle(fontWeight = if (filter == f) FontWeight.Bold else FontWeight.Normal)) {
+                                val weight = if (activeFilter == f) FontWeight.Bold else FontWeight.Normal
+                                withStyle(SpanStyle(fontWeight = weight)) {
                                     append(name)
                                 }
                                 withStyle(SpanStyle(fontWeight = FontWeight.Normal)) { append("  $count") }
@@ -174,13 +192,13 @@ private fun TasksContent(
                         )
                     },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = TealSoft,
-                        selectedLabelColor = TealDark
+                        selectedContainerColor = colors.accentSoft,
+                        selectedLabelColor = colors.accentDark
                     ),
                     border = FilterChipDefaults.filterChipBorder(
                         enabled = true,
-                        selected = filter == f,
-                        borderColor = Border,
+                        selected = activeFilter == f,
+                        borderColor = colors.border,
                         selectedBorderColor = Color.Transparent
                     )
                 )
@@ -195,12 +213,27 @@ private fun TasksContent(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(visible, key = { it.id }) { task ->
-                    TaskCard(task, onToggle = { onToggle(task) }, onClick = { onEdit(task) })
+                    SwipeTaskCard(
+                        done = task.done,
+                        onSwipeDone = { onToggle(task) },
+                        onSwipeDelete = { onDelete(task) }
+                    ) {
+                        TaskCard(
+                            task = task,
+                            onToggle = { onToggle(task) },
+                            onClick = { onEdit(task) },
+                            showPriority = settings.showPriorities,
+                            dateStyle = settings.dateStyle,
+                            overdue = settings.highlightOverdue && task.isOverdue(today),
+                            compact = settings.compactCards,
+                            adaptiveHeight = settings.adaptiveCards
+                        )
+                    }
                 }
             }
         } else if (loaded) {
             Box(Modifier.fillMaxSize().padding(top = 40.dp), contentAlignment = Alignment.TopCenter) {
-                Text(stringResource(R.string.no_tasks), color = Muted, fontSize = 15.sp)
+                Text(stringResource(R.string.no_tasks), color = colors.muted, fontSize = 15.sp)
             }
         }
     }
@@ -213,8 +246,10 @@ private fun TasksContentPreview() {
         TasksContent(
             tasks = sampleTasks,
             loaded = true,
+            settings = AppSettings(),
             onToggle = {},
-            onEdit = {}
+            onEdit = {},
+            onDelete = {}
         )
     }
 }
